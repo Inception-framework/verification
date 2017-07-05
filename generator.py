@@ -22,7 +22,11 @@ device.halt()
 device.load_binary_in_sram('./main.bin',0x10000000)
 device.write_reg(15,0x10000000)
 device.write_reg(0,0)
+regs_initial = device.dump_all_regs()
 device.resume()
 time.sleep(0.01)
 device.halt()
-device.read_reg(0)
+regs_final = device.dump_all_regs()
+for (initial_name,initial_val),(final_name,final_val) in zip(regs_initial.items(),regs_final.items()):
+    if(final_val != initial_val):
+        print(final_name,final_val)
