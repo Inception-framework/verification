@@ -39,6 +39,9 @@ device.resume()
 time.sleep(0.01)
 device.halt()
 regs_final = device.dump_all_regs()
-for (initial_name,initial_val),(final_name,final_val) in zip(regs_initial.items(),regs_final.items()):
-    if(final_val != initial_val):
-        print(final_name,final_val)
+with open('reg_diff.log',mode='wt') as reg_diff_file:
+    reg_diff_file.write("test\n")
+    for (initial_name,initial_val),(final_name,final_val) in zip(regs_initial.items(),regs_final.items()):
+        if(final_val != initial_val):
+            reg_diff_file.write("%s %d\n"%(final_name,final_val))
+    reg_diff_file.close
