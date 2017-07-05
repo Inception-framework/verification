@@ -11,13 +11,25 @@
 # in non command line mode
 import sys
 import time
+import os
 sys.path.append('../RTDebugger-driver/src/')
 import interactive
+
+# generate the test code
+# TODO
+
+# compile the code for inception
+# TODO
+
+# compile the code for the real device
+os.system('make')
 
 # the real device, used as golden model
 device = interactive.Interactive('../RTDebugger-driver/Debug/libinception.so',False)
 
 # execute on the real device
+# and dump the differencies in the values of the registers before and after
+# execution
 device.halt()
 device.load_binary_in_sram('./main.bin',0x10000000)
 device.write_reg(15,0x10000000)
