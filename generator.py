@@ -33,7 +33,6 @@ device = interactive.Interactive('../RTDebugger-driver/Debug/libinception.so',Fa
 device.halt()
 device.load_binary_in_sram('./main.bin',0x10000000)
 device.write_reg(15,0x10000000)
-device.write_reg(0,0)
 regs_initial = device.dump_all_regs()
 device.resume()
 time.sleep(0.01)
