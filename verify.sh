@@ -15,5 +15,5 @@ if [ "$DIFFERENCE" != "" ]; then
   exit 1
 fi 
 cd ..
-
+echo "TEST PASSED"
 exit 0
