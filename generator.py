@@ -20,6 +20,7 @@ device = interactive.Interactive('../RTDebugger-driver/Debug/libinception.so',Fa
 
 
 # generate the test code
+os.system('mkdir -p main')
 with open('main/main.c',mode='wt') as main_file:
     main_file.write("#include <stdlib.h>\n")
     main_file.write("__attribute__((naked))\n")
