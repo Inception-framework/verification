@@ -144,18 +144,21 @@ for operation,suboperations in operations_expanded.items():
                  inst_string += ", #0x%02x"%(random.randint(0,2**8-1))
               elif operand == "#<imm12>":
                  inst_string += ", #0x%03x"%(random.randint(0,2**12-1))
-                            
+          
+          # print test case to screen                  
+          print ("")        
           for init_str in init_strings:
               print(init_str)     
           print (inst_string)
-          print ("")        
+          
+          # generate c code
           generate_test_code(init_strings,inst_string,id)
-          id += 1
- 
-sys.exit(0)
-# compile the code for the real device
-os.system('make')
+          
+          # compile the code for the real device
+          os.system('make ID=%d'%(id))
 
+          id += 1
+sys.exit(0)
 # execute on the real device
 # and dump the differencies in the values of the registers before and after
 # execution
