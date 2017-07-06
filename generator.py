@@ -38,11 +38,11 @@ operations.update({"Add" :
                         ("N","Z","C","V"),
                         ("Rd:=Rn+Operand2")
                        ),
-                       (("ADC","ADCS"),
-                        ("Rd","Rn","<Operand2>"),
-                        ("N","Z","C","V"),
-                        ("Rd:=Rn+Operand2+Carry")
-                       ),
+                      # (("ADC","ADCS"),
+                      #  ("Rd","Rn","<Operand2>"),
+                      #  ("N","Z","C","V"),
+                      #  ("Rd:=Rn+Operand2+Carry")
+                      # ),
                         (("ADD",),
                         ("Rd","Rn","#<imm12>"),
                         (),
@@ -50,26 +50,26 @@ operations.update({"Add" :
                        )
                      ]
                    })
-operations.update({"Subtract" : 
-                     [
-                       (("SUB","SUBS"),
-                        ("Rd","Rn","<Operand2>"),
-                        ("N","Z","C","V"),
-                        ("Rd:=Rn-Operand2")
-                       ),
-                       (("SBC","SBCS"),
-                        ("Rd","Rn","<Operand2>"),
-                        ("N","Z","C","V"),
-                        ("Rd:=Rn-Operand2-NOT(Carry)")
-                       ),
-                        (("SUB",),
-                        ("Rd","Rn","#<imm12>"),
-                        ("N","Z","C","V"),
-                        ("Rd:=Rn-imm12")
-                       )
-                     ]
-                   })
-
+#operations.update({"Subtract" : 
+#                     [
+#                       (("SUB","SUBS"),
+#                        ("Rd","Rn","<Operand2>"),
+#                        ("N","Z","C","V"),
+#                        ("Rd:=Rn-Operand2")
+#                       ),
+#                       (("SBC","SBCS"),
+#                        ("Rd","Rn","<Operand2>"),
+#                        ("N","Z","C","V"),
+#                        ("Rd:=Rn-Operand2-NOT(Carry)")
+#                       ),
+#                        (("SUB",),
+#                        ("Rd","Rn","#<imm12>"),
+#                        ("N","Z","C","V"),
+#                        ("Rd:=Rn-imm12")
+#                       )
+#                     ]
+#                   })
+#
 # possible operand2
 # TODO continue
 operand2 = ( "#<imm8>", "Rn" )
@@ -102,7 +102,7 @@ def generate_test_code(init_strings,inst_string,id):
     with open('main/main%d.c'%(id),mode='wt') as main_file:
         main_file.write("#include <stdlib.h>\n")
         main_file.write("__attribute__((naked))\n")
-        main_file.write("int main(void){\n")
+        main_file.write("void main(void){\n")
        
         # input operands
         for init_string in init_strings:
@@ -178,12 +178,24 @@ for operation,suboperations in operations_expanded.items():
           # compile the code for the real device
           os.system('make ID=%d'%(id))
 
+          # execute on the real hw
           execute_on_device_and_dump(id)
+
+          # compile the code for inception
+          # TODO better
+          os.system('echo "#define KLEE\n$(cat main/main%d.c)" > main/main%d.c'%(id,id))
+          os.system('./build.sh main%d inception'%(id))
+
+          # print test case to screen                  
+          print ("")        
+          for init_str in init_strings:
+              print(init_str)     
+          print (inst_string)
+ 
+          os.system('cat main/reg_diff%d.log'%(id))
+          
           id += 1
+          #input("Press any key to continue")
 sys.exit(0)
-# compile the code for inception
-# TODO
-os.system('echo "#define KLEE\n$(cat main/main.c)" > main/main.c')
-os.system('./build.sh main inception')
 
 
