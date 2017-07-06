@@ -96,7 +96,7 @@ for operation,suboperations in operations.items():
           suboperations_expanded.append((instructions,operands,updates,actions))
   operations_expanded.update({operation : suboperations_expanded})
 
-def generate_test_code(init_strings,inst_string,id):
+def generate_test_code(init_strings,inst_string,return_string,id):
     # generate the test code
     os.system('mkdir -p main')
     with open('main/main%d.c'%(id),mode='wt') as main_file:
@@ -110,6 +110,9 @@ def generate_test_code(init_strings,inst_string,id):
         
         # instruction under test
         main_file.write('  __asm volatile("'+inst_string+'");\n')
+        
+        # just to make fracture happy about the return value in r0
+        main_file.write('  __asm volatile("'+return_string+'");\n')
         
         main_file.write("  #ifndef KLEE\n")
         main_file.write("  while(1);\n")
@@ -151,11 +154,13 @@ for operation,suboperations in operations_expanded.items():
       for instruction in instructions:
           init_strings = []
           inst_string = instruction
+          return_string = ""
           for operand in operands:
               #print(operand)
               if operand == "Rd":
                  Rd = random.randint(0,12)
                  inst_string += " R%d"%(Rd)
+                 return_string += "mov r0,r%d"%(Rd)
               elif operand == "Rn":
                  Rn = random.randint(0,12)
                  Rn_val = random.randint(0,2**8-1)
@@ -173,13 +178,13 @@ for operation,suboperations in operations_expanded.items():
           print (inst_string)
           
           # generate c code
-          generate_test_code(init_strings,inst_string,id)
+          generate_test_code(init_strings,inst_string,return_string,id)
           
           # compile the code for the real device
           os.system('make ID=%d'%(id))
 
           # execute on the real hw
-          execute_on_device_and_dump(id)
+          #execute_on_device_and_dump(id)
 
           # compile the code for inception
           # TODO better
