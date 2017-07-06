@@ -201,6 +201,11 @@ for operation,suboperations in operations_expanded.items():
           
           id += 1
           #input("Press any key to continue")
+
+with open('main/Ntests',mode='wt') as Ntests_file:
+    Ntests_file.write("%d\n"%(id))
+Ntests_file.close
+
 sys.exit(0)
 
 
