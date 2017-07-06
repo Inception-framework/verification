@@ -119,6 +119,27 @@ def generate_test_code(init_strings,inst_string,id):
         main_file.write("}\n")
     main_file.close
 
+def execute_on_device_and_dump(id):
+    # execute on the real device
+    # and dump the differencies in the values of the registers before and after
+    # execution
+    device.halt()
+    device.load_binary_in_sram('main/main%d.bin'%(id),0x10000000)
+    device.write_reg(15,0x10000000)
+    device.clear_all_regs()
+    regs_initial = device.dump_all_regs()
+    device.resume()
+    time.sleep(0.01)
+    device.halt()
+    regs_final = device.dump_all_regs()
+    with open('main/reg_diff%d.log'%(id),mode='wt') as reg_diff_file:
+        #reg_diff_file.write("test\n")
+        for (initial_name,initial_val),(final_name,final_val) in zip(regs_initial.items(),regs_final.items()):
+            # print("%d %d\n"%(initial_val,final_val))
+            if(final_val != initial_val and initial_name != "PC"):
+                reg_diff_file.write("%s\n%d\n"%(final_name,final_val))
+        reg_diff_file.close
+
 
 # test generation
 # TODO continue                    
@@ -157,28 +178,9 @@ for operation,suboperations in operations_expanded.items():
           # compile the code for the real device
           os.system('make ID=%d'%(id))
 
+          execute_on_device_and_dump(id)
           id += 1
 sys.exit(0)
-# execute on the real device
-# and dump the differencies in the values of the registers before and after
-# execution
-device.halt()
-device.load_binary_in_sram('main/main.bin',0x10000000)
-device.write_reg(15,0x10000000)
-device.clear_all_regs()
-regs_initial = device.dump_all_regs()
-device.resume()
-time.sleep(0.01)
-device.halt()
-regs_final = device.dump_all_regs()
-with open('main/reg_diff.log',mode='wt') as reg_diff_file:
-    #reg_diff_file.write("test\n")
-    for (initial_name,initial_val),(final_name,final_val) in zip(regs_initial.items(),regs_final.items()):
-        # print("%d %d\n"%(initial_val,final_val))
-        if(final_val != initial_val and initial_name != "PC"):
-            reg_diff_file.write("%s\n%d\n"%(final_name,final_val))
-    reg_diff_file.close
-
 # compile the code for inception
 # TODO
 os.system('echo "#define KLEE\n$(cat main/main.c)" > main/main.c')
