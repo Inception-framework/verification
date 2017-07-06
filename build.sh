@@ -14,7 +14,7 @@ function help() {
 function clean() {
 	rm -rf main/*.o
 	rm -rf main/*.ll
-	rm -rf main/*.bc
+	#rm -rf main/*.bc
 	rm -rf main/*.elf
 	rm -rf main/*.bin
 }
