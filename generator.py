@@ -184,7 +184,7 @@ for operation,suboperations in operations_expanded.items():
           os.system('make ID=%d'%(id))
 
           # execute on the real hw
-          #execute_on_device_and_dump(id)
+          execute_on_device_and_dump(id)
 
           # compile the code for inception
           # TODO better
