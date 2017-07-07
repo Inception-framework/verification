@@ -38,7 +38,7 @@ run_klee() {
 
 extract_dump_info() {
 
-  cat registers.dump | awk 'BEGIN {for(i=0; i<=6; i++)} { \
+  cat registers.dump | awk '{ \
     print $1; \
     getline; \
     getline; \
