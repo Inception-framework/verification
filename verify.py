@@ -50,7 +50,7 @@ for i in range(0,Ntests):
         print ("")
         print ("\t[Test]")
         print ("\t"+str(reg_diff_klee))
-        print ("\t[Expected]")
+        print ("\t[Oracle]")
         print ("\t"+str(diff))
         print ("\t[Differences]")
         print ("\t"+str(reg_diff))
