@@ -48,9 +48,9 @@ for i in range(0,Ntests):
         with open('main/main%d.c'%(i),mode='r') as source_file:
             print (source_file.read())
         print ("")
-        print ("\t[Oracle]")
+        print ("\t[Test]")
         print ("\t"+str(reg_diff_klee))
-        print ("\t[Expected]")
+        print ("\t[Oracle]")
         print ("\t"+str(diff))
         print ("\t[Differences]")
         print ("\t"+str(reg_diff))
