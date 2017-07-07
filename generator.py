@@ -23,21 +23,27 @@ import getopt
 # read command line args
 def print_usage_error():
     print("Wrong parameters, usage:")
-    print("./generator.py -s <seed> -c <(continue in case of error) True/False>")
+    print("./generator.py -s <seed> -c <(continue in case of error) True/False> [-n (no device)]")
     sys.exit(0)
+
+no_device = False
 
 if len(sys.argv) <= 1:
     print_usage_error()
 try:
-    opts,args = getopt.getopt(sys.argv[1:],"hs:c:",["help","seed=","continue="])
+    opts,args = getopt.getopt(sys.argv[1:],"hs:c:n",["help",
+                                                     "seed=",
+                                                     "continue=",
+                                                     "no-device"])
 except getopt.GetoptError:
     print_usage_error()
 for opt,arg in opts:
     if opt in ("-h","--help"):
         print("./generator.py")
         print("options:")
-        print("    s,seed:     integer seed for pseudo random test generation")
-        print("    c,continue: True->skip errors, False->stop on error")
+        print("    s,seed=:      integer seed for pseudo random test generation")
+        print("    c,continue=:  True->skip errors, False->stop on error")
+        print("    n,no-device:  skip execution on device")
         print("")
     elif opt in ("-s","--seed"):
         seed = int(arg)
@@ -49,11 +55,18 @@ for opt,arg in opts:
         else: 
             print("Error, continue must be True or False")
             sys.exit(1)
+    elif opt in ("-n","--no-device"):
+            no_device = True 
 
 random.seed(seed)
 
 # the real device, used as golden model
-device = interactive.Interactive('../RTDebugger-driver/Debug/libinception.so',False)
+if(no_device==False):
+    device = interactive.Interactive('../RTDebugger-driver/Debug/libinception.so',False)
+else:
+    print("\nSkipping execution on device...\n")
+
+
 
 # possible operations
 # TODO continue, somehow we must init the carry, consider CPSR etc...
@@ -70,7 +83,7 @@ operations.update({"Add" :
                       #  ("N","Z","C","V"),
                       #  ("Rd:=Rn+Operand2+Carry")
                       # ),
-                        (("ADD",),
+                       (("ADD",),
                         ("Rd","Rn","#<imm12>"),
                         (),
                         ("Rd:=Rn+imm12")
@@ -224,7 +237,8 @@ for operation,suboperations in operations_expanded.items():
           os_run.run_catch_error('make ID=%d'%(id),cont)
 
           # execute on the real hw
-          execute_on_device_and_dump(id)
+          if(no_device==False):
+              execute_on_device_and_dump(id)
 
           # compile the code for inception
           # TODO better
