@@ -8,7 +8,7 @@ function help() {
 	echo "    Supported mode : "
 	echo "        inception"
 	echo "        fracture"
-	exit
+	exit 1
 }
 
 function clean() {
@@ -56,7 +56,7 @@ fi
 #	printf "%s\n" "--> ok"
 #else
 #	printf "%s\n" "--> failed"
-#	exit
+#	exit 1
 #fi
 
 printf "%s" "Cleaning directory  ...                      "
@@ -67,7 +67,7 @@ printf "%s\n" "--> ok"
 #arm-none-eabi-as $AS_ARGS -g ./$1/$1.s -o ./$1/$1.o
 #if [ $? != 0 ]; then
 #	printf "%s\n" "--> failed"
-#	exit;
+#	exit 1;
 #fi
 #printf "%s\n" "--> ok"
 #
@@ -75,7 +75,7 @@ printf "%s" "Compiling C Source to LLVM IR ...            "
 $CLANG $CLANG_ARGS -emit-llvm -I/usr/arm-linux-gnueabihf/include/ -I/usr/include/newlib/ -c -g ./main/$1.c -o ./main/$1.bc
 if [ $? != 0 ]; then
 	printf "%s\n" "--> failed"
-	exit;
+	exit 1;
 fi
 printf "%s\n" "--> ok"
 
@@ -83,7 +83,7 @@ printf "%s" "Compiling source to IR human readable ...    "
 $CLANG $CLANG_ARGS -emit-llvm -S -I/usr/arm-linux-gnueabihf/include/ -I/usr/include/newlib/ -c -g ./main/$1.c -o ./main/$1.ll
 if [ $? != 0 ]; then
 	printf "%s\n" "--> failed"
-	exit;
+	exit 1;
 fi
 printf "%s\n" "--> ok"
 
@@ -91,7 +91,7 @@ printf "%s" "Compiling C source code to object file ...    "
 arm-none-eabi-gcc $GCC_ARGS -g -c ./main/$1.c -o ./main/$1.o
 if [ $? != 0 ]; then
 	printf "%s\n" "--> failed"
-	exit;
+	exit 1;
 fi
 printf "%s\n" "--> ok"
 
@@ -99,7 +99,7 @@ printf "%s" "Linking object files ...                      "
 arm-none-eabi-ld -T ./link.ld ./main/$1.o -o ./main/$1.elf
 if [ $? != 0 ]; then
 	printf "%s\n" "--> failed"
-	exit;
+	exit 1;
 fi
 printf "%s\n" "--> ok"
 
@@ -107,7 +107,7 @@ printf "%s" "Creating binary format output ...             "
 arm-none-eabi-objcopy -O binary ./main/$1.elf ./main/$1.bin
 if [ $? != 0 ]; then
 	printf "%s\n" "--> failed"
-	exit;
+	exit 1;
 fi
 printf "%s\n" "--> ok"
 
@@ -120,7 +120,7 @@ fi
 $TARGET_PATH/$TARGET $PRINT_ARGS $FRACTURE_ARGS
 if [ $? != 0 ]; then
 	printf "%s\n" "--> failed"
-	exit;
+	exit 1;
 fi
 printf "%s\n" "--> ok"
 
@@ -128,7 +128,7 @@ printf "%s\n" "--> ok"
 $LLVM_AS ./main/$1.elf.ll -o ./main/$1_merged.bc
 if [ $? != 0 ]; then
 	printf "%s\n" "--> failed"
-	exit;
+	exit 1;
 fi
 printf "%s\n" "--> ok"
 
