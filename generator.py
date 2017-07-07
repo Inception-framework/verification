@@ -156,13 +156,16 @@ def generate_test_code(init_strings,inst_string,return_string,id):
        
         # input operands
         for init_string in init_strings:
-            main_file.write('  __asm volatile("'+init_string+'"); \n')
+            if init_string != "":
+                main_file.write('  __asm volatile("'+init_string+'"); \n')
         
         # instruction under test
-        main_file.write('  __asm volatile("'+inst_string+'");\n')
+        if(inst_string != ""):
+            main_file.write('  __asm volatile("'+inst_string+'");\n')
         
-        # just to make fracture happy about the return value in r0
-        main_file.write('  __asm volatile("'+return_string+'");\n')
+        # return stuff
+        if(return_string != ""):
+            main_file.write('  __asm volatile("'+return_string+'");\n')
         
         main_file.write("  #ifndef KLEE\n")
         main_file.write("  while(1);\n")
@@ -213,7 +216,7 @@ for operation,suboperations in operations_expanded.items():
               if operand == "Rd":
                  Rd = random.randint(0,12)
                  inst_string += " R%d"%(Rd)
-                 return_string += "mov r0,r%d"%(Rd)
+                 #return_string += "mov r0,r%d"%(Rd)
               elif operand == "Rn":
                  Rn = random.randint(0,12)
                  Rn_val = random.randint(0,2**32-1)
