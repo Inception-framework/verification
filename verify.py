@@ -21,7 +21,7 @@ def print_usage_error():
 if len(sys.argv) <= 1:
     print_usage_error()
 try:
-    opts,args = getopt.getopt(sys.argv[1:],"h:s:c",["help","seed=","continue="])
+    opts,args = getopt.getopt(sys.argv[1:],"hs:c:",["help","seed=","continue="])
 except getopt.GetoptError:
     print_usage_error()
 for opt,arg in opts:

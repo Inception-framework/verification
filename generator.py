@@ -29,7 +29,7 @@ def print_usage_error():
 if len(sys.argv) <= 1:
     print_usage_error()
 try:
-    opts,args = getopt.getopt(sys.argv[1:],"h:s:c",["help","seed=","continue="])
+    opts,args = getopt.getopt(sys.argv[1:],"hs:c:",["help","seed=","continue="])
 except getopt.GetoptError:
     print_usage_error()
 for opt,arg in opts:
@@ -166,8 +166,11 @@ def execute_on_device_and_dump(id):
         #reg_diff_file.write("test\n")
         for (initial_name,initial_val),(final_name,final_val) in zip(regs_initial.items(),regs_final.items()):
             # print("%d %d\n"%(initial_val,final_val))
-            if(final_val != initial_val and initial_name != "PC"):
-                reg_diff_file.write("%s\n%d\n"%(final_name,final_val))
+            if(final_val != initial_val):
+                if(initial_name != "PC"):
+                    reg_diff_file.write("%s\n%d\n"%(final_name,final_val))
+            elif(initial_name == "CPSR"):
+                reg_diff_file.write("%s\n%d\n"%(final_name,0))
         reg_diff_file.close
 
 
