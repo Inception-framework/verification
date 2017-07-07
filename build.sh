@@ -112,9 +112,24 @@ fi
 printf "%s\n" "--> ok"
 
 if [ $PRINT_GRAPHS = true ]; then
-	$TARGET_PATH/$TARGET -view-machine-dags -view-ir-dags -print-graph $FRACTURE_ARGS
+	PRINT_ARGS='-view-machine-dags -view-ir-dags -print-graph'
 else
-        $TARGET_PATH/$TARGET $FRACTURE_ARGS
+        PRINT_ARGS=''
 fi
 
+$TARGET_PATH/$TARGET $PRINT_ARGS $FRACTURE_ARGS
+if [ $? != 0 ]; then
+	printf "%s\n" "--> failed"
+	exit;
+fi
+printf "%s\n" "--> ok"
+
+
 $LLVM_AS ./main/$1.elf.ll -o ./main/$1_merged.bc
+if [ $? != 0 ]; then
+	printf "%s\n" "--> failed"
+	exit;
+fi
+printf "%s\n" "--> ok"
+
+
