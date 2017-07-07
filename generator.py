@@ -17,11 +17,27 @@ sys.path.append('../RTDebugger-driver/src/')
 import interactive
 from collections import OrderedDict
 import random
+import os_run
+import getopt
 
-if len(sys.argv) == 2:
-    seed = int(sys.argv[1])
-else:
-    seed = 3
+# read command line args
+try:
+    opts,args = getopt.getopt(sys.argv[1:],"h:s:c",["help","seed=","continue="])
+except getopt.GetoptError:
+    print("Wrong parameters, usage:")
+    print("./generator.py -s <seed> -c <(continue in case of error) True/False>")
+    sys.exit(0)
+for opt,arg in opts:
+    if opt in ("-h","--help"):
+        print("./generator.py")
+        print("options:")
+        print("    s,seed:     integer seed for pseudo random test generation")
+        print("    c,continue: True->skip errors, False->stop on error")
+        print("")
+    elif opt in ("-s","--seed"):
+        seed = int(arg)
+    elif opt in ("-c","--continue"):
+        cont = bool(arg)
 
 random.seed(seed)
 
@@ -189,7 +205,7 @@ for operation,suboperations in operations_expanded.items():
           # compile the code for inception
           # TODO better
           os.system('echo "#define KLEE\n$(cat main/main%d.c)" > main/main%d.c'%(id,id))
-          os.system('./build.sh main%d inception'%(id))
+          os_run.run_catch_error('./build.sh main%d inception'%(id),False)
 
           # print test case to screen                  
           print ("")        
