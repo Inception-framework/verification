@@ -38,11 +38,13 @@ run_klee() {
 
 extract_dump_info() {
 
-  cat registers.dump | awk 'BEGIN {for(i=1; i<=6; i++){getline;}} \
-
-  {print $3; getline; print $2; for(i=1; i<=4; i++) \
-
-  {getline;}}' > reg_diff_klee$1.log
+  cat registers.dump | awk 'BEGIN {for(i=0; i<=6; i++)} { \
+    print $1; \
+    getline; \
+    getline; \
+    print $2; \
+    for(i=1; i<=4; i++) \
+      {getline;}}' > reg_diff_klee$1.log
 }
 
 main() {
