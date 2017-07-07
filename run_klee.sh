@@ -53,7 +53,7 @@ main() {
   cd main
 
   #For each test run
-  for i in `seq 0 $1`;
+  for i in `seq 0 $(($1-1))`;
   do
     echo "[RUNNING]\t Test ${i} is running ..."
     run_klee ${i}
