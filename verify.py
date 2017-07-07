@@ -9,6 +9,40 @@
 
 import os
 import sys
+import getopt
+import os_run
+
+# read command line args
+def print_usage_error():
+    print("Wrong parameters, usage:")
+    print("./generator.py -s <seed> -c <(continue in case of error) True/False>")
+    sys.exit(0)
+
+if len(sys.argv) <= 1:
+    print_usage_error()
+try:
+    opts,args = getopt.getopt(sys.argv[1:],"h:s:c",["help","seed=","continue="])
+except getopt.GetoptError:
+    print_usage_error()
+for opt,arg in opts:
+    if opt in ("-h","--help"):
+        print("./generator.py")
+        print("options:")
+        print("    s,seed:     integer seed for pseudo random test generation")
+        print("    c,continue: True->skip errors, False->stop on error")
+        print("")
+    elif opt in ("-s","--seed"):
+        seed = int(arg)
+    elif opt in ("-c","--continue"):
+        if arg == "True":
+            cont = True
+        elif arg == "False":
+            cont = False
+        else: 
+            print("Error, continue must be True or False")
+            sys.exit(1)
+
+
 
 # Retrieve number of generated tests
 with open('main/Ntests',mode='r') as Ntests_file:
@@ -17,10 +51,7 @@ Ntests_file.close
 
 # Run klee and dump registers
 print ("Running klee ...")
-ret = os.system("./run_klee.sh "+str(Ntests))
-if ret != 0 :
-    print ("-> fail")
-    sys.exit()
+os_run.run_catch_error("./run_klee.sh "+str(Ntests),cont)
 
 for i in range(0,Ntests):
 
@@ -56,3 +87,6 @@ for i in range(0,Ntests):
         print ("\t"+str(diff))
         print ("-----------------------------------------------")
         print("")
+        if(cont == False):
+            print("aborting...")
+            sys.exit(1)

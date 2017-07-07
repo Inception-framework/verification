@@ -21,12 +21,17 @@ import os_run
 import getopt
 
 # read command line args
-try:
-    opts,args = getopt.getopt(sys.argv[1:],"h:s:c",["help","seed=","continue="])
-except getopt.GetoptError:
+def print_usage_error():
     print("Wrong parameters, usage:")
     print("./generator.py -s <seed> -c <(continue in case of error) True/False>")
     sys.exit(0)
+
+if len(sys.argv) <= 1:
+    print_usage_error()
+try:
+    opts,args = getopt.getopt(sys.argv[1:],"h:s:c",["help","seed=","continue="])
+except getopt.GetoptError:
+    print_usage_error()
 for opt,arg in opts:
     if opt in ("-h","--help"):
         print("./generator.py")
@@ -37,7 +42,13 @@ for opt,arg in opts:
     elif opt in ("-s","--seed"):
         seed = int(arg)
     elif opt in ("-c","--continue"):
-        cont = bool(arg)
+        if arg == "True":
+            cont = True
+        elif arg == "False":
+            cont = False
+        else: 
+            print("Error, continue must be True or False")
+            sys.exit(1)
 
 random.seed(seed)
 
@@ -114,7 +125,7 @@ for operation,suboperations in operations.items():
 
 def generate_test_code(init_strings,inst_string,return_string,id):
     # generate the test code
-    os.system('mkdir -p main')
+    os_run.run_catch_error('mkdir -p main',cont)
     with open('main/main%d.c'%(id),mode='wt') as main_file:
         main_file.write("#include <stdlib.h>\n")
         main_file.write("__attribute__((naked))\n")
@@ -197,23 +208,23 @@ for operation,suboperations in operations_expanded.items():
           generate_test_code(init_strings,inst_string,return_string,id)
           
           # compile the code for the real device
-          os.system('make ID=%d'%(id))
+          os_run.run_catch_error('make ID=%d'%(id),cont)
 
           # execute on the real hw
           execute_on_device_and_dump(id)
 
           # compile the code for inception
           # TODO better
-          os.system('echo "#define KLEE\n$(cat main/main%d.c)" > main/main%d.c'%(id,id))
-          os_run.run_catch_error('./build.sh main%d inception'%(id),False)
-
+          os_run.run_catch_error('echo "#define KLEE\n$(cat main/main%d.c)" > main/main%d.c'%(id,id),cont)
+          os_run.run_catch_error('./build.sh main%d inception'%(id),cont)
+          
           # print test case to screen                  
           print ("")        
           for init_str in init_strings:
               print(init_str)     
           print (inst_string)
  
-          os.system('cat main/reg_diff%d.log'%(id))
+          os_run.run_catch_error('cat main/reg_diff%d.log'%(id),cont)
           
           id += 1
           #input("Press any key to continue")
