@@ -56,7 +56,7 @@ random.seed(seed)
 device = interactive.Interactive('../RTDebugger-driver/Debug/libinception.so',False)
 
 # possible operations
-# TODO continue
+# TODO continue, somehow we must init the carry, consider CPSR etc...
 operations = OrderedDict()
 operations.update({"Add" : 
                      [
@@ -98,7 +98,7 @@ operations.update({"Add" :
 #                   })
 #
 # possible operand2
-# TODO continue
+# TODO continue, more values are possible
 operand2 = ( "#<imm8>", "Rn" )
 
 ## expanding Operand2
@@ -123,6 +123,16 @@ for operation,suboperations in operations.items():
           suboperations_expanded.append((instructions,operands,updates,actions))
   operations_expanded.update({operation : suboperations_expanded})
 
+# functions to generate the test code
+
+# generate init of a 32 bit reg
+# be sure that val is an integer on 32 bits
+def append_init_reg_strings(init_strings,Rn,Rn_val):
+    for sh in range(0,32,8):
+        masked_val = (Rn_val & (0x000000ff << sh))>>sh
+        init_strings.append("mov R%d,#0x%02x,#%d"%(Rn,masked_val,sh))
+    
+# generate C code with inline ASM
 def generate_test_code(init_strings,inst_string,return_string,id):
     # generate the test code
     os_run.run_catch_error('mkdir -p main',cont)
@@ -193,8 +203,8 @@ for operation,suboperations in operations_expanded.items():
                  return_string += "mov r0,r%d"%(Rd)
               elif operand == "Rn":
                  Rn = random.randint(0,12)
-                 Rn_val = random.randint(0,2**8-1)
-                 init_strings.append("mov R%d,#0x%02x"%(Rn,Rn_val))
+                 Rn_val = random.randint(0,2**32-1)
+                 append_init_reg_strings(init_strings,Rn,Rn_val)
                  inst_string += ", R%d"%(Rn)
               elif operand == "#<imm8>":
                  inst_string += ", #0x%02x"%(random.randint(0,2**8-1))
