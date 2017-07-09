@@ -23,27 +23,34 @@ import getopt
 # read command line args
 def print_usage_error():
     print("Wrong parameters, usage:")
-    print("./generator.py -s <seed> -c <(continue in case of error) True/False> [-n (no device)]")
+    print("./generator.py \
+           -s <seed> \
+           -c <(continue in case of error) True/False> \
+           [-n (no device)] \
+           [-N <number of tests>")
     sys.exit(0)
 
 no_device = False
+folder="test"
 
 if len(sys.argv) <= 1:
     print_usage_error()
 try:
-    opts,args = getopt.getopt(sys.argv[1:],"hs:c:n",["help",
-                                                     "seed=",
-                                                     "continue=",
-                                                     "no-device"])
+    opts,args = getopt.getopt(sys.argv[1:],"hs:c:nf:",["help",
+                                                       "seed=",
+                                                       "continue=",
+                                                       "no-device",
+                                                       "folder="])
 except getopt.GetoptError:
     print_usage_error()
 for opt,arg in opts:
     if opt in ("-h","--help"):
         print("./generator.py")
         print("options:")
-        print("    s,seed=:      integer seed for pseudo random test generation")
-        print("    c,continue=:  True->skip errors, False->stop on error")
-        print("    n,no-device:  skip execution on device")
+        print("    s,seed=:            integer seed for pseudo random test generation")
+        print("    c,continue=:        True->skip errors, False->stop on error")
+        print("    n,no-device:        skip execution on device")
+        print("    o,folder=:          folder where tests are stored")
         print("")
     elif opt in ("-s","--seed"):
         seed = int(arg)
@@ -56,7 +63,9 @@ for opt,arg in opts:
             print("Error, continue must be True or False")
             sys.exit(1)
     elif opt in ("-n","--no-device"):
-            no_device = True 
+            no_device = True
+    elif opt in ("-f","--folder="):
+            folder = arg 
 
 random.seed(seed)
 
@@ -148,8 +157,8 @@ def append_init_reg_strings(init_strings,Rn,Rn_val):
 # generate C code with inline ASM
 def generate_test_code(init_strings,inst_string,return_string,id):
     # generate the test code
-    os_run.run_catch_error('mkdir -p main',cont)
-    with open('main/main%d.c'%(id),mode='wt') as main_file:
+    os_run.run_catch_error('mkdir -p %s'%folder,cont)
+    with open('%s/main%d.c'%(folder,id),mode='wt') as main_file:
         main_file.write("#include <stdlib.h>\n")
         main_file.write("__attribute__((naked))\n")
         main_file.write("void main(void){\n")
@@ -180,7 +189,7 @@ def execute_on_device_and_dump(id):
     # and dump the differencies in the values of the registers before and after
     # execution
     device.halt()
-    device.load_binary_in_sram('main/main%d.bin'%(id),0x10000000)
+    device.load_binary_in_sram('%s/main%d.bin'%(folder,id),0x10000000)
     device.write_reg(15,0x10000000)
     device.clear_all_regs()
     regs_initial = device.dump_all_regs()
@@ -188,7 +197,7 @@ def execute_on_device_and_dump(id):
     time.sleep(0.01)
     device.halt()
     regs_final = device.dump_all_regs()
-    with open('main/reg_diff%d.log'%(id),mode='wt') as reg_diff_file:
+    with open('%s/reg_diff%d.log'%(folder,id),mode='wt') as reg_diff_file:
         #reg_diff_file.write("test\n")
         for (initial_name,initial_val),(final_name,final_val) in zip(regs_initial.items(),regs_final.items()):
             # print("%d %d\n"%(initial_val,final_val))
@@ -237,7 +246,7 @@ for operation,suboperations in operations_expanded.items():
           generate_test_code(init_strings,inst_string,return_string,id)
           
           # compile the code for the real device
-          os_run.run_catch_error('make ID=%d'%(id),cont)
+          os_run.run_catch_error('make FOLDER=%s ID=%d'%(folder,id),cont)
 
           # execute on the real hw
           if(no_device==False):
@@ -245,21 +254,23 @@ for operation,suboperations in operations_expanded.items():
 
           # compile the code for inception
           # TODO better
-          os_run.run_catch_error('echo "#define KLEE\n$(cat main/main%d.c)" > main/main%d.c'%(id,id),cont)
-          os_run.run_catch_error('./build.sh main%d inception'%(id),cont)
+          os_run.run_catch_error('echo "#define KLEE\n$(cat %s/main%d.c)" > \
+                                  %s/main%d.c'%(folder,id,folder,id),cont)
+          os_run.run_catch_error('./build.sh main%d inception %s'%(id,folder),cont)
           
           # print test case to screen                  
           print ("")        
           for init_str in init_strings:
               print(init_str)     
           print (inst_string)
- 
-          os_run.run_catch_error('cat main/reg_diff%d.log'%(id),cont)
+           
+          if(no_device == False):
+              os_run.run_catch_error('cat %s/reg_diff%d.log'%(folder,id),cont)
           
           id += 1
           #input("Press any key to continue")
 
-with open('main/Ntests',mode='wt') as Ntests_file:
+with open('%s/Ntests'%(folder),mode='wt') as Ntests_file:
     Ntests_file.write("%d\n"%(id))
 Ntests_file.close
 

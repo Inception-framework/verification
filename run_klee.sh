@@ -1,8 +1,8 @@
 #!/bin/sh
 
-if [ "$#" != 1 ]; then
+if [ "$#" != 2 ]; then
   echo "Missing arguments ..."
-  echo "$0 <ITERATION_NUMBER>"
+  echo "$0 <ITERATION_NUMBER> <folder>"
   exit
 fi
 
@@ -12,8 +12,6 @@ run_klee() {
 
   # Remove old dump file
   rm registers.dump >&-
-
-  klee -search=dfs main${arg1}_merged.bc  >&-
 
   # Load the configuration file
   cp ../../Samples/lpc1800-demos/config.json .
@@ -49,10 +47,13 @@ extract_dump_info() {
 
 main() {
 
+  folder=$2
+  DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+  
   echo "-----------------[KLEE]------------------------"
 
   #Source code directory
-  cd main
+  cd $folder
 
   #For each test run
   for i in `seq 0 $(($1-1))`;
@@ -66,10 +67,10 @@ main() {
     echo "Done"
   done
 
-  cd ..
+  cd $DIR
 
   echo "-----------------------------------------------"
   exit 0
 }
 
-main $1
+main $1 $2

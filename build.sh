@@ -12,11 +12,11 @@ function help() {
 }
 
 function clean() {
-	rm -rf main/*.o
-	rm -rf main/*.ll
-	#rm -rf main/*.bc
-	rm -rf main/*.elf
-	rm -rf main/*.bin
+	rm -rf $3/*.o
+	rm -rf $3/*.ll
+	#rm -rf $3/*.bc
+	rm -rf $3/*.elf
+	rm -rf $3/*.bin
 }
 
 LLVM_LINK='../tools/llvm/build_debug/Debug+Asserts/bin/llvm-link'
@@ -36,16 +36,16 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 #SAMPLES="$(find ./* -type d -printf "%f\n")"
 
-if [ "$#" != 2 ]; then
+if [ "$#" != 3 ]; then
 	help
 fi
 
 if [ "$2" == "inception" ]; then
 	TARGET="inception-cl"
-	FRACTURE_ARGS+="$DIR/main/$1.elf $DIR/main/$1.bc"
+	FRACTURE_ARGS+="$DIR/$3/$1.elf $DIR/$3/$1.bc"
 elif [ "$2" == "fracture" ]; then
 	TARGET='fracture-cl'
-	FRACTURE_ARGS+="$DIR/main/$1.elf"
+	FRACTURE_ARGS+="$DIR/$3/$1.elf"
 else
 	echo "Unknown mode ... $2"
 	help
@@ -72,7 +72,7 @@ printf "%s\n" "--> ok"
 #printf "%s\n" "--> ok"
 #
 printf "%s" "Compiling C Source to LLVM IR ...            "
-$CLANG $CLANG_ARGS -emit-llvm -I/usr/arm-linux-gnueabihf/include/ -I/usr/include/newlib/ -c -g ./main/$1.c -o ./main/$1.bc
+$CLANG $CLANG_ARGS -emit-llvm -I/usr/arm-linux-gnueabihf/include/ -I/usr/include/newlib/ -c -g ./$3/$1.c -o ./$3/$1.bc
 if [ $? != 0 ]; then
 	printf "%s\n" "--> failed"
 	exit 1;
@@ -80,7 +80,7 @@ fi
 printf "%s\n" "--> ok"
 
 printf "%s" "Compiling source to IR human readable ...    "
-$CLANG $CLANG_ARGS -emit-llvm -S -I/usr/arm-linux-gnueabihf/include/ -I/usr/include/newlib/ -c -g ./main/$1.c -o ./main/$1.ll
+$CLANG $CLANG_ARGS -emit-llvm -S -I/usr/arm-linux-gnueabihf/include/ -I/usr/include/newlib/ -c -g ./$3/$1.c -o ./$3/$1.ll
 if [ $? != 0 ]; then
 	printf "%s\n" "--> failed"
 	exit 1;
@@ -88,7 +88,7 @@ fi
 printf "%s\n" "--> ok"
 
 printf "%s" "Compiling C source code to object file ...    "
-arm-none-eabi-gcc $GCC_ARGS -g -c ./main/$1.c -o ./main/$1.o
+arm-none-eabi-gcc $GCC_ARGS -g -c ./$3/$1.c -o ./$3/$1.o
 if [ $? != 0 ]; then
 	printf "%s\n" "--> failed"
 	exit 1;
@@ -96,7 +96,7 @@ fi
 printf "%s\n" "--> ok"
 
 printf "%s" "Linking object files ...                      "
-arm-none-eabi-ld -T ./link.ld ./main/$1.o -o ./main/$1.elf
+arm-none-eabi-ld -T ./link.ld ./$3/$1.o -o ./$3/$1.elf
 if [ $? != 0 ]; then
 	printf "%s\n" "--> failed"
 	exit 1;
@@ -104,7 +104,7 @@ fi
 printf "%s\n" "--> ok"
 
 printf "%s" "Creating binary format output ...             "
-arm-none-eabi-objcopy -O binary ./main/$1.elf ./main/$1.bin
+arm-none-eabi-objcopy -O binary ./$3/$1.elf ./$3/$1.bin
 if [ $? != 0 ]; then
 	printf "%s\n" "--> failed"
 	exit 1;
@@ -125,7 +125,7 @@ fi
 printf "%s\n" "--> ok"
 
 
-$LLVM_AS ./main/$1.elf.ll -o ./main/$1_merged.bc
+$LLVM_AS ./$3/$1.elf.ll -o ./$3/$1_merged.bc
 if [ $? != 0 ]; then
 	printf "%s\n" "--> failed"
 	exit 1;
