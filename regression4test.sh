@@ -1,20 +1,21 @@
 # Authors: Giovanni Camurati, Nassim Corteggiani
 # check that current changes to the test
 # do not break the system
-for i in $(seq 0 50); do
+for i in $(seq 0 $1); do
   # before
   git stash;
-  rm -rf test;
-  ./generator.py -s $i -c False;
-  ./verify.py -s $i -c True | \
+  rm -rf newmain;
+  rm -rf results;
+  ./generator.py -s $i -c False -o tests/newmain; \
+  ./verify.py -c True -i tests/newmain -o tests/ciao/results| \
   grep -E 'PASSED|failed' > before;
-  
+ 
   # after
   git stash pop;
   rm -rf newmain;
   rm -rf results;
   ./generator.py -s $i -c False -o tests/newmain; \
-  ./verify.py -c True -i newmain -o tests/ciao/results| \
+  ./verify.py -c True -i tests/newmain -o tests/ciao/results| \
   grep -E 'PASSED|failed' > after;
   
   # check
@@ -26,7 +27,8 @@ for i in $(seq 0 50); do
   fi
   
 done;
-rm -rf test
+rm -rf test_cases
+rm -rf test_results
 rm -rf tests/newmain
 rm -rf tests/ciao/results
 rm -rf after

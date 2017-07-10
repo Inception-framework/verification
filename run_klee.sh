@@ -22,7 +22,7 @@ run_klee() {
   # Run klee
   klee -search=dfs main${arg1}_merged.bc  >&-
   if [ $? != 0 ]; then
-          printf "---> failed"
+          printf "---> test $arg1 running klee failed"
           exit 1;
   fi
 
@@ -56,16 +56,16 @@ main() {
   cd $folder
 
   #For each test run
-  for i in `seq 0 $(($1-1))`;
-  do
-    echo "[RUNNING]\t Test ${i} is running ..."
-    run_klee ${i}
+  #for i in `seq 0 $(($1-1))`;
+  #do
+    echo "[RUNNING]\t Test $1 is running ..."
+    run_klee $1
     echo "Done"
 
-    echo "[PARSER]\t Parsing dump ${i} ..."
-    extract_dump_info $i
+    echo "[PARSER]\t Parsing dump $1 ..."
+    extract_dump_info $1
     echo "Done"
-  done
+  #done
 
   cd $DIR
 

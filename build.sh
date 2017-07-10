@@ -119,7 +119,7 @@ fi
 
 $TARGET_PATH/$TARGET $PRINT_ARGS $FRACTURE_ARGS
 if [ $? != 0 ]; then
-	printf "%s\n" "--> failed"
+	printf "%s\n" "--> $1 fracture failed"
 	exit 1;
 fi
 printf "%s\n" "--> ok"

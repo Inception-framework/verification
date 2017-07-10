@@ -73,15 +73,17 @@ Ntests_file.close
 for i in range(0,Ntests):
     os_run.run_catch_error('echo "#define KLEE\n$(cat %s/main%d.c)" > \
                             %s/main%d.c'%(ofolder,i,ofolder,i),cont)
-    os_run.run_catch_error('./build.sh main%d inception %s'%(i,ofolder),cont)
- 
+    ret = os_run.run_catch_error('./build.sh main%d inception %s'%(i,ofolder),cont)
+    if(ret != 0):
+        continue
 
-# Run klee and dump registers
-print ("Running klee ...")
-os_run.run_catch_error("./run_klee.sh "+str(Ntests)+" "+str(ofolder),cont)
+    # Run klee and dump registers
+    print ("Running klee ...")
+    ret = os_run.run_catch_error("./run_klee.sh "+str(i)+" "+str(ofolder),cont)
+    if(ret != 0):
+        continue
 
-for i in range(0,Ntests):
-
+    # check 
     with open('%s/reg_diff%d.log'%(ofolder,i),mode='r') as reg_diff_file:
         lines = reg_diff_file.read().splitlines()
     reg_diff_file.close

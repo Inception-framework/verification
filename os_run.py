@@ -20,7 +20,9 @@ def run_catch_error(command_str, continue_stop_n):
             sys.exit(1)
         else:
             print("continuing anyway...")
+            return 1
         print("")
+    return 0
         
          
            
