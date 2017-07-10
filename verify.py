@@ -16,36 +16,31 @@ import os_run
 def print_usage_error():
     print("Wrong parameters, usage:")
     print("./generator.py \
-           -s <seed> \
            -c <(continue in case of error) True/False> \
-           [-n (no device)] \
-           [-N <number of tests>")
+           [-i <input folder> \
+           [-o <output folder>")
     sys.exit(0)
 
-no_device = False
-folder="test"
+ifolder="test_cases"
+ofolder="test_results"
 
 if len(sys.argv) <= 1:
     print_usage_error()
 try:
-    opts,args = getopt.getopt(sys.argv[1:],"hs:c:nf:",["help",
-                                                       "seed=",
+    opts,args = getopt.getopt(sys.argv[1:],"hc:i:o:",["help",
                                                        "continue=",
-                                                       "no-device",
-                                                       "folder="])
+                                                       "input-folder=",
+                                                       "output-folder="])
 except getopt.GetoptError:
     print_usage_error()
 for opt,arg in opts:
     if opt in ("-h","--help"):
         print("./generator.py")
         print("options:")
-        print("    s,seed=:            integer seed for pseudo random test generation")
         print("    c,continue=:        True->skip errors, False->stop on error")
-        print("    n,no-device:        skip execution on device")
-        print("    o,folder=:          folder where tests are stored")
+        print("    i,input-folder=:    folder where test cases are stored")
+        print("    o,output-folder=:   folder where test results are stored")
         print("")
-    elif opt in ("-s","--seed"):
-        seed = int(arg)
     elif opt in ("-c","--continue"):
         if arg == "True":
             cont = True
@@ -54,15 +49,16 @@ for opt,arg in opts:
         else: 
             print("Error, continue must be True or False")
             sys.exit(1)
-    elif opt in ("-n","--no-device"):
-            no_device = True
-    elif opt in ("-f","--folder="):
-            folder = arg 
+    elif opt in ("-i","--input-folder="):
+            ifolder = arg 
+    elif opt in ("-o","--output-folder="):
+            ofolder = arg 
 
-
+# create output folder starting from the input
+os_run.run_catch_error("cp -r %s %s"%(ifolder,ofolder),False)
 
 # Retrieve number of generated tests
-with open('%s/Ntests'%(folder),mode='r') as Ntests_file:
+with open('%s/Ntests'%(ofolder),mode='r') as Ntests_file:
     Ntests = int(Ntests_file.readline())
 Ntests_file.close
 
@@ -71,23 +67,23 @@ Ntests_file.close
 # TODO better
 for i in range(0,Ntests):
     os_run.run_catch_error('echo "#define KLEE\n$(cat %s/main%d.c)" > \
-                            %s/main%d.c'%(folder,i,folder,i),cont)
-    os_run.run_catch_error('./build.sh main%d inception %s'%(i,folder),cont)
+                            %s/main%d.c'%(ofolder,i,ofolder,i),cont)
+    os_run.run_catch_error('./build.sh main%d inception %s'%(i,ofolder),cont)
  
 
 # Run klee and dump registers
 print ("Running klee ...")
-os_run.run_catch_error("./run_klee.sh "+str(Ntests)+" "+str(folder),cont)
+os_run.run_catch_error("./run_klee.sh "+str(Ntests)+" "+str(ofolder),cont)
 
 for i in range(0,Ntests):
 
-    with open('%s/reg_diff%d.log'%(folder,i),mode='r') as reg_diff_file:
+    with open('%s/reg_diff%d.log'%(ofolder,i),mode='r') as reg_diff_file:
         lines = reg_diff_file.read().splitlines()
     reg_diff_file.close
     reg_diff = set([(reg,val) for reg,val in zip(lines[::2],lines[1::2])])
     #print (reg_diff)
 
-    with open('%s/reg_diff_klee%d.log'%(folder,i),mode='r') as reg_diff_klee_file:
+    with open('%s/reg_diff_klee%d.log'%(ofolder,i),mode='r') as reg_diff_klee_file:
         lines_klee = reg_diff_klee_file.read().splitlines()
     reg_diff_klee_file.close
     reg_diff_klee = set([(reg,val) for reg,val in zip(lines_klee[::2],lines_klee[1::2])])
@@ -100,9 +96,9 @@ for i in range(0,Ntests):
         print ("-----------------[TEST %d]---------------------"%(i))
         print ("[RESULT]\t The test failed ...")
         print ("")
-        print ("[Source Code]\t Available into %s/main%d.c :"%(folder,i))
+        print ("[Source Code]\t Available into %s/main%d.c :"%(ofolder,i))
         print ("")
-        with open('%s/main%d.c'%(folder,i),mode='r') as source_file:
+        with open('%s/main%d.c'%(ofolder,i),mode='r') as source_file:
             print (source_file.read())
         print ("")
         print ("\t[Test]")

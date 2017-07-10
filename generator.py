@@ -27,20 +27,20 @@ def print_usage_error():
            -s <seed> \
            -c <(continue in case of error) True/False> \
            [-n (no device)] \
-           [-N <number of tests>")
+           [-o <output folder>")
     sys.exit(0)
 
 no_device = False
-folder="test"
+folder="test_cases"
 
 if len(sys.argv) <= 1:
     print_usage_error()
 try:
-    opts,args = getopt.getopt(sys.argv[1:],"hs:c:nf:",["help",
+    opts,args = getopt.getopt(sys.argv[1:],"hs:c:no:",["help",
                                                        "seed=",
                                                        "continue=",
                                                        "no-device",
-                                                       "folder="])
+                                                       "output-folder="])
 except getopt.GetoptError:
     print_usage_error()
 for opt,arg in opts:
@@ -50,7 +50,7 @@ for opt,arg in opts:
         print("    s,seed=:            integer seed for pseudo random test generation")
         print("    c,continue=:        True->skip errors, False->stop on error")
         print("    n,no-device:        skip execution on device")
-        print("    o,folder=:          folder where tests are stored")
+        print("    o,output-folder=:   folder where test cases are stored")
         print("")
     elif opt in ("-s","--seed"):
         seed = int(arg)
@@ -64,7 +64,7 @@ for opt,arg in opts:
             sys.exit(1)
     elif opt in ("-n","--no-device"):
             no_device = True
-    elif opt in ("-f","--folder="):
+    elif opt in ("-o","--output-folder="):
             folder = arg 
 
 random.seed(seed)

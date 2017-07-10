@@ -3,27 +3,32 @@
 # do not break the system
 for i in $(seq 0 50); do
   # before
-  git stash > /dev/null;
-  rm -rf main;
-  ./generator.py -s $i -c False > /dev/null;
+  git stash;
+  rm -rf test;
+  ./generator.py -s $i -c False;
   ./verify.py -s $i -c True | \
-  grep -E 'PASSED|failed' > main/before;
+  grep -E 'PASSED|failed' > before;
   
   # after
-  git stash pop > /dev/null;
+  git stash pop;
   rm -rf newmain;
-  ./generator.py -s $i -c False -f newmain > /dev/null; \
-  ./verify.py -s $i -c True -f newmain| \
-  grep -E 'PASSED|failed' > newmain/after;
+  rm -rf results;
+  ./generator.py -s $i -c False -o newmain; \
+  ./verify.py -c True -i newmain -o results| \
+  grep -E 'PASSED|failed' > after;
   
   # check
   echo "TEST $i"
-  if [ "$(diff -r main/before newmain/after)" ]
+  if [ "$(diff -r before after)" ]
   then
     echo "ERROR $i"
     exit 1
   fi
- 
+  
 done;
-rm -rf main
+rm -rf test
 rm -rf newmain
+rm -rf results
+rm -rf after
+rm -rf before
+
