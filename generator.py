@@ -31,7 +31,7 @@ def print_usage_error():
     sys.exit(0)
 
 no_device = False
-folder="test_cases"
+folder="tests/test_cases"
 
 if len(sys.argv) <= 1:
     print_usage_error()
@@ -68,6 +68,14 @@ for opt,arg in opts:
             folder = arg 
 
 random.seed(seed)
+
+# create output folder
+os_run.run_catch_error('mkdir -p %s'%folder,cont)
+
+# save version
+vfile = os.path.abspath(folder+"/version_generator.log")
+os_run.run_catch_error("./versioning.sh %s"%(vfile),False)
+
 
 # the real device, used as golden model
 if(no_device==False):
@@ -157,7 +165,6 @@ def append_init_reg_strings(init_strings,Rn,Rn_val):
 # generate C code with inline ASM
 def generate_test_code(init_strings,inst_string,return_string,id):
     # generate the test code
-    os_run.run_catch_error('mkdir -p %s'%folder,cont)
     with open('%s/main%d.c'%(folder,id),mode='wt') as main_file:
         main_file.write("#include <stdlib.h>\n")
         main_file.write("__attribute__((naked))\n")
