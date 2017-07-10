@@ -14,7 +14,7 @@ run_klee() {
   rm registers.dump >&-
 
   # Load the configuration file
-  cp ../../Samples/lpc1800-demos/config.json .
+  cp $DIR/../Samples/lpc1800-demos/config.json .
 
   # Remove old log
   rm -rf klee-* >&-

@@ -55,7 +55,8 @@ for opt,arg in opts:
             ofolder = arg 
 
 # create output folder starting from the input
-os_run.run_catch_error("cp -r %s %s"%(ifolder,ofolder),False)
+os_run.run_catch_error("mkdir -p %s"%(ofolder),False)
+os_run.run_catch_error("cp %s/* %s/"%(ifolder,ofolder),False)
 
 # Retrieve number of generated tests
 with open('%s/Ntests'%(ofolder),mode='r') as Ntests_file:

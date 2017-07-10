@@ -13,8 +13,8 @@ for i in $(seq 0 50); do
   git stash pop;
   rm -rf newmain;
   rm -rf results;
-  ./generator.py -s $i -c False -o newmain; \
-  ./verify.py -c True -i newmain -o results| \
+  ./generator.py -s $i -c False -o tests/newmain; \
+  ./verify.py -c True -i newmain -o tests/ciao/results| \
   grep -E 'PASSED|failed' > after;
   
   # check
@@ -27,8 +27,8 @@ for i in $(seq 0 50); do
   
 done;
 rm -rf test
-rm -rf newmain
-rm -rf results
+rm -rf tests/newmain
+rm -rf tests/ciao/results
 rm -rf after
 rm -rf before
 
