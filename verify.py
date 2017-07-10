@@ -61,7 +61,6 @@ os_run.run_catch_error("cp %s/* %s/"%(ifolder,ofolder),False)
 # save version
 vfile = os.path.abspath(ofolder+"/version_verify.log")
 os_run.run_catch_error("./versioning.sh %s"%(vfile),False)
-sys.exit(1)
 
 # Retrieve number of generated tests
 with open('%s/Ntests'%(ofolder),mode='r') as Ntests_file:

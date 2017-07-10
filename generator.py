@@ -31,7 +31,7 @@ def print_usage_error():
     sys.exit(0)
 
 no_device = False
-folder="tests/test_cases"
+folder="test_cases"
 
 if len(sys.argv) <= 1:
     print_usage_error()
