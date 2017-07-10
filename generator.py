@@ -236,12 +236,6 @@ for operation,suboperations in operations_expanded.items():
               elif operand == "#<imm12>":
                  inst_string += ", #0x%03x"%(random.randint(0,2**12-1))
           
-          # print test case to screen                  
-          print ("")        
-          for init_str in init_strings:
-              print(init_str)     
-          print (inst_string)
-          
           # generate c code
           generate_test_code(init_strings,inst_string,return_string,id)
           
@@ -252,18 +246,6 @@ for operation,suboperations in operations_expanded.items():
           if(no_device==False):
               execute_on_device_and_dump(id)
 
-          # compile the code for inception
-          # TODO better
-          os_run.run_catch_error('echo "#define KLEE\n$(cat %s/main%d.c)" > \
-                                  %s/main%d.c'%(folder,id,folder,id),cont)
-          os_run.run_catch_error('./build.sh main%d inception %s'%(id,folder),cont)
-          
-          # print test case to screen                  
-          print ("")        
-          for init_str in init_strings:
-              print(init_str)     
-          print (inst_string)
-           
           if(no_device == False):
               os_run.run_catch_error('cat %s/reg_diff%d.log'%(folder,id),cont)
           

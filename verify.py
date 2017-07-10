@@ -66,6 +66,15 @@ with open('%s/Ntests'%(folder),mode='r') as Ntests_file:
     Ntests = int(Ntests_file.readline())
 Ntests_file.close
 
+# DUT
+# C + asm stubs => llvm IR
+# TODO better
+for i in range(0,Ntests):
+    os_run.run_catch_error('echo "#define KLEE\n$(cat %s/main%d.c)" > \
+                            %s/main%d.c'%(folder,i,folder,i),cont)
+    os_run.run_catch_error('./build.sh main%d inception %s'%(i,folder),cont)
+ 
+
 # Run klee and dump registers
 print ("Running klee ...")
 os_run.run_catch_error("./run_klee.sh "+str(Ntests)+" "+str(folder),cont)
