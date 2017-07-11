@@ -1,7 +1,7 @@
 # Authors: Giovanni Camurati, Nassim Corteggiani
 
-if [ "$#" != 2 ]; then
-  echo "./simple_regression <min seed> <max seed>" 
+if [ "$#" != 3 ]; then
+  echo "./simple_regression <min seed> <max seed> <tests per instruction>" 
 fi
 
 rm log
@@ -10,7 +10,7 @@ rm passed
 rm -rf simple_regression
 
 for i in $(seq $1 $2); do
-  ./generator.py -s $i -c True -o simple_regression/test_cases_$i
+  ./generator.py -s $i -c True -o simple_regression/test_cases_$i -N $3
   if [ $? != 0 ]; then
 	printf "%s\n" "--> failed"
 	exit 1;

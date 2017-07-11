@@ -27,30 +27,34 @@ def print_usage_error():
            -s <seed> \
            -c <(continue in case of error) True/False> \
            [-n (no device)] \
-           [-o <output folder>")
+           [-o <output folder> \
+           [-N <number of tests per instruction>")
     sys.exit(0)
 
 no_device = False
 folder="test_cases"
+tests_per_instruction=1
 
 if len(sys.argv) <= 1:
     print_usage_error()
 try:
-    opts,args = getopt.getopt(sys.argv[1:],"hs:c:no:",["help",
+    opts,args = getopt.getopt(sys.argv[1:],"hs:c:no:N:",["help",
                                                        "seed=",
                                                        "continue=",
                                                        "no-device",
-                                                       "output-folder="])
+                                                       "output-folder=",
+                                                       "tests-per-instruction="])
 except getopt.GetoptError:
     print_usage_error()
 for opt,arg in opts:
     if opt in ("-h","--help"):
         print("./generator.py")
         print("options:")
-        print("    s,seed=:            integer seed for pseudo random test generation")
-        print("    c,continue=:        True->skip errors, False->stop on error")
-        print("    n,no-device:        skip execution on device")
-        print("    o,output-folder=:   folder where test cases are stored")
+        print("    s,seed=:                     integer seed for pseudo random test generation")
+        print("    c,continue=:                 True->skip errors, False->stop on error")
+        print("    n,no-device:                 skip execution on device")
+        print("    o,output-folder=:            folder where test cases are stored")
+        print("    N,tests-per-instrcutionr=:   number of tests per instruction")
         print("")
     elif opt in ("-s","--seed"):
         seed = int(arg)
@@ -66,6 +70,9 @@ for opt,arg in opts:
             no_device = True
     elif opt in ("-o","--output-folder="):
             folder = arg 
+    elif opt in ("-N","--tests-per-instruction="):
+            tests_per_instruction = int(arg) 
+
 
 random.seed(seed)
 
@@ -219,45 +226,46 @@ def execute_on_device_and_dump(id):
 # test generation
 # TODO continue                    
 id = 0
-for operation,suboperations in operations_expanded.items():
-  #print (operation)
-  for instructions,operands,updates,actions in suboperations:
-      #print (instructions)
-      for instruction in instructions:
-          init_strings = []
-          inst_string = instruction
-          return_string = ""
-          for operand in operands:
-              #print(operand)
-              if operand == "Rd":
-                 Rd = random.randint(0,12)
-                 inst_string += " R%d"%(Rd)
-                 #return_string += "mov r0,r%d"%(Rd)
-              elif operand == "Rn":
-                 Rn = random.randint(0,12)
-                 Rn_val = random.randint(0,2**32-1)
-                 append_init_reg_strings(init_strings,Rn,Rn_val)
-                 inst_string += ", R%d"%(Rn)
-              elif operand == "#<imm8>":
-                 inst_string += ", #0x%02x"%(random.randint(0,2**8-1))
-              elif operand == "#<imm12>":
-                 inst_string += ", #0x%03x"%(random.randint(0,2**12-1))
-          
-          # generate c code
-          generate_test_code(init_strings,inst_string,return_string,id)
-          
-          # compile the code for the real device
-          os_run.run_catch_error('make FOLDER=%s ID=%d'%(folder,id),cont)
-
-          # execute on the real hw
-          if(no_device==False):
-              execute_on_device_and_dump(id)
-
-          if(no_device == False):
-              os_run.run_catch_error('cat %s/reg_diff%d.log'%(folder,id),cont)
-          
-          id += 1
-          #input("Press any key to continue")
+for i in range(0,tests_per_instruction):
+    for operation,suboperations in operations_expanded.items():
+      #print (operation)
+      for instructions,operands,updates,actions in suboperations:
+          #print (instructions)
+          for instruction in instructions:
+              init_strings = []
+              inst_string = instruction
+              return_string = ""
+              for operand in operands:
+                  #print(operand)
+                  if operand == "Rd":
+                     Rd = random.randint(0,12)
+                     inst_string += " R%d"%(Rd)
+                     #return_string += "mov r0,r%d"%(Rd)
+                  elif operand == "Rn":
+                     Rn = random.randint(0,12)
+                     Rn_val = random.randint(0,2**32-1)
+                     append_init_reg_strings(init_strings,Rn,Rn_val)
+                     inst_string += ", R%d"%(Rn)
+                  elif operand == "#<imm8>":
+                     inst_string += ", #0x%02x"%(random.randint(0,2**8-1))
+                  elif operand == "#<imm12>":
+                     inst_string += ", #0x%03x"%(random.randint(0,2**12-1))
+              
+              # generate c code
+              generate_test_code(init_strings,inst_string,return_string,id)
+              
+              # compile the code for the real device
+              os_run.run_catch_error('make FOLDER=%s ID=%d'%(folder,id),cont)
+    
+              # execute on the real hw
+              if(no_device==False):
+                  execute_on_device_and_dump(id)
+    
+              if(no_device == False):
+                  os_run.run_catch_error('cat %s/reg_diff%d.log'%(folder,id),cont)
+              
+              id += 1
+              #input("Press any key to continue")
 
 with open('%s/Ntests'%(folder),mode='wt') as Ntests_file:
     Ntests_file.write("%d\n"%(id))
