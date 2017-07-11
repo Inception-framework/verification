@@ -84,6 +84,10 @@ echo "-- Regression results -------"
 echo "-----------------------------"
 cat log | grep 'failed' > failed
 cat log | grep 'PASSED' > passed
+cat failed | grep 'fracture' > failed_fracture
+cat failed | grep 'CPSR' > cpsr_not_implemented
 echo "$(wc -l passed)"
 echo "$(wc -l failed)"
+echo "    $(wc -l failed_fracture)"
+echo "    $(wc -l cpsr_not_implemented)"
 cat failed
