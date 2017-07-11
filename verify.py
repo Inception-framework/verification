@@ -96,12 +96,18 @@ for i in range(0,Ntests):
     reg_diff_klee = set([(reg,val) for reg,val in zip(lines_klee[::2],lines_klee[1::2])])
     #print (reg_diff_klee)
 
-    diff = reg_diff_klee - reg_diff
+    diff = reg_diff_klee.symmetric_difference(reg_diff)
     if(diff == set()):
         print ("TEST %d PASSED"%(i))
+        print ("\t[Test]")
+        print ("\t"+str(reg_diff_klee))
+        print ("\t[Oracle]")
+        print ("\t"+str(reg_diff))
+        print ("\t[Differences]")
+        print ("\t"+str(diff))
     else:
         print ("-----------------[TEST %d]---------------------"%(i))
-        print ("[RESULT]\t The test failed ..."+diff)
+        print ("[RESULT]\t The test failed ...",diff)
         print ("")
         print ("[Source Code]\t Available into %s/main%d.c :"%(ofolder,i))
         print ("")

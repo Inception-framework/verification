@@ -97,16 +97,21 @@ else:
 operations = OrderedDict()
 operations.update({"Add" : 
                      [
-                       (("ADD","ADDS"),
+                       (("ADD",),
                         ("Rd","Rn","<Operand2>"),
                         ("N","Z","C","V"),
                         ("Rd:=Rn+Operand2")
                        ),
-                      # (("ADC","ADCS"),
-                      #  ("Rd","Rn","<Operand2>"),
-                      #  ("N","Z","C","V"),
-                      #  ("Rd:=Rn+Operand2+Carry")
-                      # ),
+                       (("ADDS",),
+                        ("Rd","Rn","<Operand2>"),
+                        ("N","Z","C","V"),
+                        ("Rd:=Rn+Operand2")
+                       ),
+                       (("ADC","ADCS"),
+                        ("Rd","Rn","<Operand2>"),
+                        ("N","Z","C","V"),
+                        ("Rd:=Rn+Operand2+Carry")
+                       ),
                        (("ADD",),
                         ("Rd","Rn","#<imm12>"),
                         (),
@@ -165,10 +170,12 @@ for operation,suboperations in operations.items():
 # generate init of a 32 bit reg
 # be sure that val is an integer on 32 bits
 def append_init_reg_strings(init_strings,Rn,Rn_val):
-    for sh in range(0,32,8):
-        masked_val = (Rn_val & (0x000000ff << sh))>>sh
-        init_strings.append("mov R%d,#0x%02x,#%d"%(Rn,masked_val,sh))
-    
+    # mov+sh not working
+   # for sh in range(0,32,8):
+   #     masked_val = (Rn_val & (0x000000ff << sh))>>sh
+   #     init_strings.append("mov R%d,#0x%02x,#%d"%(Rn,masked_val,sh))
+    init_strings.append("mov R%d,#0x%02x"%(Rn,Rn_val))
+
 # generate C code with inline ASM
 def generate_test_code(init_strings,inst_string,return_string,id):
     # generate the test code
@@ -198,7 +205,7 @@ def generate_test_code(init_strings,inst_string,return_string,id):
         main_file.write("}\n")
     main_file.close
 
-def execute_on_device_and_dump(id):
+def execute_on_device_and_dump(id,changed_regs):
     # execute on the real device
     # and dump the differencies in the values of the registers before and after
     # execution
@@ -215,16 +222,17 @@ def execute_on_device_and_dump(id):
         #reg_diff_file.write("test\n")
         for (initial_name,initial_val),(final_name,final_val) in zip(regs_initial.items(),regs_final.items()):
             # print("%d %d\n"%(initial_val,final_val))
-            if(final_val != initial_val):
+            if(final_val != initial_val or \
+                list(device.regs.keys()).index(final_name) in changed_regs):             
                 if(initial_name != "PC"):
                     reg_diff_file.write("%s\n%d\n"%(final_name,final_val))
-            elif(initial_name == "CPSR"):
-                reg_diff_file.write("%s\n%d\n"%(final_name,0))
+                #elif(initial_name == "CPSR"):
+                #    reg_diff_file.write("%s\n%d\n"%(final_name,final_val))
         reg_diff_file.close
 
 
 # test generation
-# TODO continue                    
+# TODO continue
 id = 0
 for i in range(0,tests_per_instruction):
     for operation,suboperations in operations_expanded.items():
@@ -232,6 +240,9 @@ for i in range(0,tests_per_instruction):
       for instructions,operands,updates,actions in suboperations:
           #print (instructions)
           for instruction in instructions:
+              changed_regs = []
+              if(updates != ()):
+                  changed_regs.append(list(device.regs.keys()).index('CPSR'))
               init_strings = []
               inst_string = instruction
               return_string = ""
@@ -240,16 +251,23 @@ for i in range(0,tests_per_instruction):
                   if operand == "Rd":
                      Rd = random.randint(0,12)
                      inst_string += " R%d"%(Rd)
+                     changed_regs.append(Rd)
                      #return_string += "mov r0,r%d"%(Rd)
                   elif operand == "Rn":
                      Rn = random.randint(0,12)
-                     Rn_val = random.randint(0,2**32-1)
+                     # 32 not supported yet
+                     #Rn_val = random.randint(0,2**32-1)
+                     Rn_val = random.randint(0,2**8-1)
                      append_init_reg_strings(init_strings,Rn,Rn_val)
                      inst_string += ", R%d"%(Rn)
+                     # only MSB because of bug in write reg 32 bits...
+                     changed_regs.append(Rd)
                   elif operand == "#<imm8>":
-                     inst_string += ", #0x%02x"%(random.randint(0,2**8-1))
+                     imm8_val = random.randint(0,2**8-1)
+                     inst_string += ", #0x%02x"%(imm8_val)
                   elif operand == "#<imm12>":
-                     inst_string += ", #0x%03x"%(random.randint(0,2**12-1))
+                     imm12_val = random.randint(0,2**12-1)
+                     inst_string += ", #0x%03x"%(imm12_val)
               
               # generate c code
               generate_test_code(init_strings,inst_string,return_string,id)
@@ -259,7 +277,7 @@ for i in range(0,tests_per_instruction):
     
               # execute on the real hw
               if(no_device==False):
-                  execute_on_device_and_dump(id)
+                  execute_on_device_and_dump(id,changed_regs)
     
               if(no_device == False):
                   os_run.run_catch_error('cat %s/reg_diff%d.log'%(folder,id),cont)
