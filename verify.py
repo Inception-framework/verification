@@ -101,7 +101,7 @@ for i in range(0,Ntests):
         print ("TEST %d PASSED"%(i))
     else:
         print ("-----------------[TEST %d]---------------------"%(i))
-        print ("[RESULT]\t The test failed ...")
+        print ("[RESULT]\t The test failed ..."+diff)
         print ("")
         print ("[Source Code]\t Available into %s/main%d.c :"%(ofolder,i))
         print ("")
