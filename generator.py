@@ -140,7 +140,7 @@ operations.update({"Add" :
 #                   })
 #
 # possible operand2
-# TODO continue, more values are possible
+# TODO continue, more values are possible, imm8 should be imm8m
 operand2 = ( "#<imm8>", "Rn" )
 
 ## expanding Operand2
@@ -175,6 +175,10 @@ def append_init_reg_strings(init_strings,Rn,Rn_val):
    #     masked_val = (Rn_val & (0x000000ff << sh))>>sh
    #     init_strings.append("mov R%d,#0x%02x,#%d"%(Rn,masked_val,sh))
     init_strings.append("mov R%d,#0x%02x"%(Rn,Rn_val))
+
+def append_init_carry_in(init_strings,carry_in):
+    print ("Init carry in not supported yet")
+    pass
 
 # generate C code with inline ASM
 def generate_test_code(init_strings,inst_string,return_string,id):
@@ -268,7 +272,12 @@ for i in range(0,tests_per_instruction):
                   elif operand == "#<imm12>":
                      imm12_val = random.randint(0,2**12-1)
                      inst_string += ", #0x%03x"%(imm12_val)
-              
+              # implicit operand
+              if actions.find("Carry") > 0:
+                  # carry_in is a source operand
+                  carry_in = random.randint(0,1)
+                  append_init_carry_in(init_strings,carry_in)
+
               # generate c code
               generate_test_code(init_strings,inst_string,return_string,id)
               
