@@ -76,7 +76,6 @@ for i in range(0,Ntests):
     ret = os_run.run_catch_error('./build.sh main%d inception %s'%(i,ofolder),cont)
     if(ret != 0):
         continue
-    continue
     # Run klee and dump registers
     print ("Running klee ...")
     ret = os_run.run_catch_error("./run_klee.sh "+str(i)+" "+str(ofolder),cont)

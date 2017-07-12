@@ -216,7 +216,8 @@ def execute_on_device_and_dump(id,changed_regs):
     # execution
     device.halt()
     device.load_binary_in_sram('%s/main%d.bin'%(folder,id),0x10000000)
-    device.write_reg(15,0x10000000)
+    device.write_reg(15,0x10000000) # PC
+    #device.write_reg(13,0x10000000) # SP
     device.clear_all_regs()
     regs_initial = device.dump_all_regs()
     device.resume()
@@ -299,16 +300,25 @@ ldrstr_instructions = ldrstr.generate_ldrstr(seed)
 for i in range(0,tests_per_instruction):
     for ldrstr_instr in ldrstr_instructions:
         print(ldrstr_instr)
-        with open('%s/main%d.c'%(folder,id),mode='wt') as main_file:
-            main_file.write("#include <stdlib.h>\n")
-            main_file.write("__attribute__((naked))\n")
-            main_file.write("void main(void){\n")
-            main_file.write('  __asm volatile("%s");\n'%(ldrstr_instr))
-            main_file.write('  __asm volatile("bx lr");\n')
-            main_file.write("}\n")
-        main_file.close
+        generate_test_code(["mov r12,#1"],"str r12,[sp,#4]!","",id)
+        #with open('%s/main%d.c'%(folder,id),mode='wt') as main_file:
+        #    main_file.write("#include <stdlib.h>\n")
+        #    main_file.write("__attribute__((naked))\n")
+        #    main_file.write("void main(void){\n")
+        #    #main_file.write('  __asm volatile("%s");\n'%(ldrstr_instr))
+        #    main_file.write('  __asm volatile("mov r0,#1");\n')
+        #    main_file.write('  __asm volatile("add r1,r1,#1");\n')
+        #    main_file.write('  __asm volatile("bx lr");\n')
+        #    main_file.write("}\n")
+        #main_file.close
         # compile the code for the real device
         os_run.run_catch_error('make FOLDER=%s ID=%d'%(folder,id),cont)
+        # run on the real device and dump
+        execute_on_device_and_dump(id,[])
+        device.halt()
+        device.display_all_regs()
+        device.read(0x10000854)
+        device.resume()
         id += 1
  
 

@@ -111,11 +111,11 @@ if [ $? != 0 ]; then
 fi
 printf "%s\n" "--> ok"
 
-if [ $PRINT_GRAPHS = true ]; then
-	PRINT_ARGS='-view-machine-dags -view-ir-dags -print-graph'
-else
+#if [ $PRINT_GRAPHS = true ]; then
+#	PRINT_ARGS='-view-machine-dags -view-ir-dags -print-graph'
+#else
         PRINT_ARGS=''
-fi
+##fi
 
 $TARGET_PATH/$TARGET $PRINT_ARGS $FRACTURE_ARGS
 if [ $? != 0 ]; then
