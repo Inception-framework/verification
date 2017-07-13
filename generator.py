@@ -296,22 +296,23 @@ id = 0
 #              id += 1
 #              #input("Press any key to continue")
 
-init_regs,ldrstr_instructions = ldrstr.generate_ldrstr(seed)
+init_regs,base_reg,ldrstr_instructions = ldrstr.generate_ldrstr(seed)
+changed_regs = init_regs+base_reg
 init_strings = []
 for init_reg in init_regs:
     #Rn_val = random.randint(0,2**32-1)
     Rn_val = random.randint(0,2**8-1)
     append_init_reg_strings(init_strings,init_reg,Rn_val)
-print (init_strings)
+#print (init_strings)
 for i in range(0,tests_per_instruction):
     for ldrstr_instr in ldrstr_instructions:
-        print(ldrstr_instr)
-        generate_test_code(["mov r12,#1"],"str r12,[sp,#4]!","",id)
-        #generate_test_code(init_strings,ldstr_instr,"",id)
+        #print(ldrstr_instr)
+        #generate_test_code(["mov r12,#1"],"str r12,[sp,#4]!","",id)
+        generate_test_code(init_strings,ldrstr_instr,"",id)
         # compile the code for the real device
         os_run.run_catch_error('make FOLDER=%s ID=%d'%(folder,id),cont)
         # run on the real device and dump
-        execute_on_device_and_dump(id,[])
+        execute_on_device_and_dump(id,changed_regs)
         device.halt()
         device.display_all_regs()
         device.read(0x10000854)

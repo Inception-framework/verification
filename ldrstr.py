@@ -64,7 +64,7 @@ def generate_ldrstr(seed):
     if "CPSR" in init_regs:
         init_regs.remove("CPSR")
     init_regs = [list(device.regs.keys()).index(reg_name) for reg_name in init_regs]
-
+    base_reg  = [list(device.regs.keys()).index(Rn)]
     ldrstr_instructions = []
     
     # considering that we do not have {T}...
@@ -184,7 +184,7 @@ def generate_ldrstr(seed):
    # print("")
     
     
-    return init_regs,ldrstr_instructions
+    return init_regs,base_reg,ldrstr_instructions
     
 ## save number of tests
 #with open('%s/Ntests'%(folder),mode='wt') as Ntests_file:
