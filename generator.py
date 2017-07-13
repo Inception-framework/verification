@@ -240,61 +240,61 @@ def execute_on_device_and_dump(id,changed_regs):
 # test generation
 # TODO continue
 id = 0
-#for i in range(0,tests_per_instruction):
-#    for operation,suboperations in operations_expanded.items():
-#      #print (operation)
-#      for instructions,operands,updates,actions in suboperations:
-#          #print (instructions)
-#          for instruction in instructions:
-#              changed_regs = []
-#              if(updates != ()):
-#                  changed_regs.append(list(device.regs.keys()).index('CPSR'))
-#              init_strings = []
-#              inst_string = instruction
-#              return_string = ""
-#              for operand in operands:
-#                  #print(operand)
-#                  if operand == "Rd":
-#                     Rd = random.randint(0,12)
-#                     inst_string += " R%d"%(Rd)
-#                     changed_regs.append(Rd)
-#                     #return_string += "mov r0,r%d"%(Rd)
-#                  elif operand == "Rn":
-#                     Rn = random.randint(0,12)
-#                     # 32 not supported yet
-#                     #Rn_val = random.randint(0,2**32-1)
-#                     Rn_val = random.randint(0,2**8-1)
-#                     append_init_reg_strings(init_strings,Rn,Rn_val)
-#                     inst_string += ", R%d"%(Rn)
-#                     # only MSB because of bug in write reg 32 bits...
-#                     changed_regs.append(Rd)
-#                  elif operand == "#<imm8>":
-#                     imm8_val = random.randint(0,2**8-1)
-#                     inst_string += ", #0x%02x"%(imm8_val)
-#                  elif operand == "#<imm12>":
-#                     imm12_val = random.randint(0,2**12-1)
-#                     inst_string += ", #0x%03x"%(imm12_val)
-#              # implicit operand
-#              if actions.find("Carry") > 0:
-#                  # carry_in is a source operand
-#                  carry_in = random.randint(0,1)
-#                  append_init_carry_in(init_strings,carry_in)
-#
-#              # generate c code
-#              generate_test_code(init_strings,inst_string,return_string,id)
-#              
-#              # compile the code for the real device
-#              os_run.run_catch_error('make FOLDER=%s ID=%d'%(folder,id),cont)
-#    
-#              # execute on the real hw
-#              if(no_device==False):
-#                  execute_on_device_and_dump(id,changed_regs)
-#    
-#              if(no_device == False):
-#                  os_run.run_catch_error('cat %s/reg_diff%d.log'%(folder,id),cont)
-#              
-#              id += 1
-#              #input("Press any key to continue")
+for i in range(0,tests_per_instruction):
+    for operation,suboperations in operations_expanded.items():
+      #print (operation)
+      for instructions,operands,updates,actions in suboperations:
+          #print (instructions)
+          for instruction in instructions:
+              changed_regs = []
+              if(updates != ()):
+                  changed_regs.append(list(device.regs.keys()).index('CPSR'))
+              init_strings = []
+              inst_string = instruction
+              return_string = ""
+              for operand in operands:
+                  #print(operand)
+                  if operand == "Rd":
+                     Rd = random.randint(0,12)
+                     inst_string += " R%d"%(Rd)
+                     changed_regs.append(Rd)
+                     #return_string += "mov r0,r%d"%(Rd)
+                  elif operand == "Rn":
+                     Rn = random.randint(0,12)
+                     # 32 not supported yet
+                     #Rn_val = random.randint(0,2**32-1)
+                     Rn_val = random.randint(0,2**8-1)
+                     append_init_reg_strings(init_strings,Rn,Rn_val)
+                     inst_string += ", R%d"%(Rn)
+                     # only MSB because of bug in write reg 32 bits...
+                     changed_regs.append(Rn)
+                  elif operand == "#<imm8>":
+                     imm8_val = random.randint(0,2**8-1)
+                     inst_string += ", #0x%02x"%(imm8_val)
+                  elif operand == "#<imm12>":
+                     imm12_val = random.randint(0,2**12-1)
+                     inst_string += ", #0x%03x"%(imm12_val)
+              # implicit operand
+              if actions.find("Carry") > 0:
+                  # carry_in is a source operand
+                  carry_in = random.randint(0,1)
+                  append_init_carry_in(init_strings,carry_in)
+
+              # generate c code
+              generate_test_code(init_strings,inst_string,return_string,id)
+              
+              # compile the code for the real device
+              os_run.run_catch_error('make FOLDER=%s ID=%d'%(folder,id),cont)
+    
+              # execute on the real hw
+              if(no_device==False):
+                  execute_on_device_and_dump(id,changed_regs)
+    
+              if(no_device == False):
+                  os_run.run_catch_error('cat %s/reg_diff%d.log'%(folder,id),cont)
+              
+              id += 1
+              #input("Press any key to continue")
 
 ldrstr_instructions = ldrstr.generate_ldrstr(seed)
 for i in range(0,tests_per_instruction):

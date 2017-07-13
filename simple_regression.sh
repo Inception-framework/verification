@@ -66,7 +66,7 @@ for i in $(seq $1 $2); do
   ./verify.py -c True \
               -i simple_regression/test_cases_$i \
               -o simple_regression/test_results_$i \
-              | grep -E 'PASSED|test failed|fracture failed' > verif
+              | grep -E 'PASSED|test failed|fracture failed|llvm-as' > verif
   if [ $? != 0 ]; then
 	printf "%s\n" "--> failed"
 	exit 1;
@@ -85,9 +85,11 @@ echo "-----------------------------"
 cat log | grep 'failed' > failed
 cat log | grep 'PASSED' > passed
 cat failed | grep 'fracture' > failed_fracture
+cat failed | grep 'llvm-as' > failed_llvm-as
 cat failed | grep 'CPSR' > cpsr_not_implemented
 echo "$(wc -l passed)"
 echo "$(wc -l failed)"
 echo "    $(wc -l failed_fracture)"
+echo "    $(wc -l failed_llvm-as)"
 echo "    $(wc -l cpsr_not_implemented)"
 cat failed

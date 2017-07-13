@@ -127,7 +127,7 @@ printf "%s\n" "--> ok"
 
 $LLVM_AS ./$3/$1.elf.ll -o ./$3/$1_merged.bc
 if [ $? != 0 ]; then
-	printf "%s\n" "--> failed"
+	printf "%s\n" "--> $1 llvm-as failed"
 	exit 1;
 fi
 printf "%s\n" "--> ok"
