@@ -318,7 +318,6 @@ for i in range(0,tests_per_instruction):
         device.read(0x10000854)
         device.resume()
         id += 1
-        break
 
 with open('%s/Ntests'%(folder),mode='wt') as Ntests_file:
     Ntests_file.write("%d\n"%(id))
