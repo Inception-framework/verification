@@ -54,7 +54,17 @@ def generate_ldrstr(seed):
     reglist="{"+', '.join(reglist)+"}"
     Rd1 = random.choice(reglist_allowed)
     Rd2 = random.choice(reglist_allowed)
-    
+ 
+    init_regs = ', '.join([Rd,Rd1,Rd2])+", "+reglist[1:len(reglist)-1]
+    init_regs = init_regs.split(', ')
+    if "PC" in init_regs:
+        init_regs.remove("PC")
+    if "SP" in init_regs:
+        init_regs.remove("SP")
+    if "CPSR" in init_regs:
+        init_regs.remove("CPSR")
+    init_regs = [list(device.regs.keys()).index(reg_name) for reg_name in init_regs]
+
     ldrstr_instructions = []
     
     # considering that we do not have {T}...
@@ -173,8 +183,8 @@ def generate_ldrstr(seed):
    #     break
    # print("")
     
-  
-    return ldrstr_instructions
+    
+    return init_regs,ldrstr_instructions
     
 ## save number of tests
 #with open('%s/Ntests'%(folder),mode='wt') as Ntests_file:
