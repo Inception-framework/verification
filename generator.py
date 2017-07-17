@@ -210,6 +210,40 @@ def generate_test_code(init_strings,inst_string,return_string,id):
         main_file.write("}\n")
     main_file.close
 
+def generate_ldrstr_code(init_strings,modify_strings,ldrstr_string,id):
+    # generate the test code
+    with open('%s/main%d.c'%(folder,id),mode='wt') as main_file:
+        main_file.write("#include <stdlib.h>\n")
+        main_file.write("__attribute__((naked))\n")
+        main_file.write("void main(void){\n")
+       
+        # input operands
+        for init_string in init_strings:
+            if init_string != "":
+                main_file.write('  __asm volatile("'+init_string+'"); \n')
+        
+        # store
+        if(ldrstr_string != ""):
+            main_file.write('  __asm volatile("'+"ST"+ldrstr_string+'");\n')
+        
+        # change operands 
+        for modify_string in modify_strings:
+            if modify_string != "":
+                main_file.write('  __asm volatile("'+modify_string+'"); \n')
+        
+        # load
+        if(ldrstr_string != ""):
+            main_file.write('  __asm volatile("'+"LD"+ldrstr_string+'");\n')
+       
+        main_file.write("  #ifndef KLEE\n")
+        main_file.write("  while(1);\n")
+        main_file.write("  #else\n")
+        main_file.write('  __asm volatile("bx lr");\n')
+        main_file.write("  #endif\n")
+        main_file.write("}\n")
+    main_file.close
+
+
 def execute_on_device_and_dump(id,changed_regs):
     # execute on the real device
     # and dump the differencies in the values of the registers before and after
@@ -217,7 +251,7 @@ def execute_on_device_and_dump(id,changed_regs):
     device.halt()
     device.load_binary_in_sram('%s/main%d.bin'%(folder,id),0x10000000)
     device.write_reg(15,0x10000000) # PC
-    device.write_reg(13,0x10000000) # SP
+    device.write_reg(13,0x10000004) # SP
     device.clear_all_regs()
     regs_initial = device.dump_all_regs()
     device.resume()
@@ -299,23 +333,29 @@ id = 0
 init_regs,base_reg,ldrstr_instructions = ldrstr.generate_ldrstr(seed)
 changed_regs = init_regs+base_reg
 init_strings = []
+modify_strings = []
+print (init_regs)
 for init_reg in init_regs:
     #Rn_val = random.randint(0,2**32-1)
     Rn_val = random.randint(0,2**8-1)
+    Rn_val2 = random.randint(0,2**8-1)
+    while Rn_val2 == Rn_val:
+        Rn_val2 = random.randint(0,2**8-1)
     append_init_reg_strings(init_strings,init_reg,Rn_val)
+    append_init_reg_strings(modify_strings,init_reg,Rn_val2)
 #print (init_strings)
 for i in range(0,tests_per_instruction):
     for ldrstr_instr in ldrstr_instructions:
-        #print(ldrstr_instr)
+        print(ldrstr_instr)
         #generate_test_code(["mov r12,#1"],"str r12,[sp,#4]!","",id)
-        generate_test_code(init_strings,ldrstr_instr,"",id)
+        generate_ldrstr_code(init_strings,modify_strings,ldrstr_instr,id)
         # compile the code for the real device
         os_run.run_catch_error('make FOLDER=%s ID=%d'%(folder,id),cont)
         # run on the real device and dump
         execute_on_device_and_dump(id,changed_regs)
         device.halt()
         device.display_all_regs()
-        device.read(0x10000854)
+        device.read(0x10000004)
         device.resume()
         id += 1
 
