@@ -210,7 +210,7 @@ def generate_test_code(init_strings,inst_string,return_string,id):
         main_file.write("}\n")
     main_file.close
 
-def generate_ldrstr_code(init_strings,modify_strings,ldrstr_string,id):
+def generate_ldrstr_code(init_strings,modify_strings,ldrstr_string1,ldrstr_string2,id):
     # generate the test code
     with open('%s/main%d.c'%(folder,id),mode='wt') as main_file:
         main_file.write("#include <stdlib.h>\n")
@@ -222,19 +222,19 @@ def generate_ldrstr_code(init_strings,modify_strings,ldrstr_string,id):
             if init_string != "":
                 main_file.write('  __asm volatile("'+init_string+'"); \n')
         
-        # store
-        if(ldrstr_string != ""):
-            main_file.write('  __asm volatile("'+"ST"+ldrstr_string+'");\n')
+        # load /store 1
+        if(ldrstr_string1 != ""):
+            main_file.write('  __asm volatile("'+ldrstr_string1+'");\n')
         
         # change operands 
         for modify_string in modify_strings:
             if modify_string != "":
                 main_file.write('  __asm volatile("'+modify_string+'"); \n')
-        
-        # load
-        if(ldrstr_string != ""):
-            main_file.write('  __asm volatile("'+"ST"+ldrstr_string+'");\n')
-       
+
+        # load /store 2
+        if(ldrstr_string2 != ""):
+            main_file.write('  __asm volatile("'+ldrstr_string2+'");\n')
+      
         main_file.write("  #ifndef KLEE\n")
         main_file.write("  while(1);\n")
         main_file.write("  #else\n")
@@ -347,11 +347,12 @@ for init_reg in init_regs:
 for i in range(0,tests_per_instruction):
     for ldrstr_instr in ldrstr_instructions:
         print(ldrstr_instr)
-        #generate_test_code(["mov r12,#1"],"str r12,[sp,#4]!","",id)
-        generate_ldrstr_code(init_strings,modify_strings,ldrstr_instr,id)
+        #generate_ldrstr_code(["mov r12,#1"],["mov r12,#2"],"str r12,[sp,#4]!","ldr r12,[sp,#4]!",id)
+        generate_ldrstr_code(init_strings,modify_strings,"ST"+ldrstr_instr,"LD"+ldrstr_instr,id)
         # compile the code for the real device
         os_run.run_catch_error('make FOLDER=%s ID=%d'%(folder,id),cont)
         # run on the real device and dump
+        #execute_on_device_and_dump(id,[12,13])
         execute_on_device_and_dump(id,changed_regs)
         device.halt()
         device.display_all_regs()
