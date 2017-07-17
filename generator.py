@@ -233,7 +233,7 @@ def generate_ldrstr_code(init_strings,modify_strings,ldrstr_string,id):
         
         # load
         if(ldrstr_string != ""):
-            main_file.write('  __asm volatile("'+"LD"+ldrstr_string+'");\n')
+            main_file.write('  __asm volatile("'+"ST"+ldrstr_string+'");\n')
        
         main_file.write("  #ifndef KLEE\n")
         main_file.write("  while(1);\n")
@@ -251,7 +251,7 @@ def execute_on_device_and_dump(id,changed_regs):
     device.halt()
     device.load_binary_in_sram('%s/main%d.bin'%(folder,id),0x10000000)
     device.write_reg(15,0x10000000) # PC
-    device.write_reg(13,0x10000004) # SP
+    device.write_reg(13,0x10000000) # SP
     device.clear_all_regs()
     regs_initial = device.dump_all_regs()
     device.resume()
@@ -358,6 +358,7 @@ for i in range(0,tests_per_instruction):
         device.read(0x10000004)
         device.resume()
         id += 1
+        break
 
 with open('%s/Ntests'%(folder),mode='wt') as Ntests_file:
     Ntests_file.write("%d\n"%(id))
