@@ -86,6 +86,7 @@ for i in range(0,Ntests):
     print ("Running klee ...")
     ret = os_run.run_catch_error("./run_klee.sh "+str(i)+" "+str(ofolder),cont)
     if(ret != 0):
+        print ("--> main%d klee failed"%(i))
         continue
 
     # check 
@@ -116,7 +117,7 @@ for i in range(0,Ntests):
         print ("\t"+str(diff))
     else:
         print ("-----------------[TEST %d]---------------------"%(i))
-        print ("[RESULT]\t The test failed ...",diff)
+        print ("[RESULT]\t main%d The test failed ..."%(i),diff)
         print ("")
         print ("[Source Code]\t Available into %s/main%d.c :"%(ofolder,i))
         print ("")

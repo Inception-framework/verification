@@ -348,7 +348,7 @@ for i in range(0,tests_per_instruction):
     for ldrstr_instr in ldrstr_instructions:
         print(ldrstr_instr)
         #generate_ldrstr_code(["mov r12,#1"],["mov r12,#2"],"str r12,[sp,#4]!","ldr r12,[sp,#4]!",id)
-        generate_ldrstr_code(init_strings,modify_strings,"ST"+ldrstr_instr,"LD"+ldrstr_instr,id)
+        generate_ldrstr_code(init_strings,modify_strings,"LD"+ldrstr_instr,"LD"+ldrstr_instr,id)
         # compile the code for the real device
         os_run.run_catch_error('make FOLDER=%s ID=%d'%(folder,id),cont)
         # run on the real device and dump
@@ -359,7 +359,7 @@ for i in range(0,tests_per_instruction):
         device.read(0x10000004)
         device.resume()
         id += 1
-        break
+        #break
 
 with open('%s/Ntests'%(folder),mode='wt') as Ntests_file:
     Ntests_file.write("%d\n"%(id))

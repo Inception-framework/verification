@@ -36,6 +36,9 @@ results=ci/results/$test_name
 # clean up
 rm ci/$test_name.log
 rm ci/$test_name.failed
+rm ci/$test_name.failed_fracture
+rm ci/$test_name.failed_klee
+rm ci/$test_name.failed_comparison
 rm ci/$test_name.passed
 rm ci/$test_name.cpsr_not_implemented
 #rm ci/$test_name.verif
@@ -48,7 +51,7 @@ rm -rf klee*
             -i $tests \
             -o $results \
             -f $filter_reglist \
-            | grep -E 'PASSED|test failed|fracture failed|llvm-as' > ci/$test_name.log
+            | grep -E 'PASSED|test failed|fracture failed|klee failed|llvm-as' > ci/$test_name.log
 if [ $? != 0 ]; then
       printf "%s\n" "--> failed"
       exit 1;
@@ -66,13 +69,17 @@ echo "-----------------------------"
 cat ci/$test_name.log | grep 'failed' > ci/$test_name.failed
 cat ci/$test_name.log | grep 'PASSED' > ci/$test_name.passed
 cat ci/$test_name.failed | grep 'fracture' > ci/$test_name.failed_fracture
+cat ci/$test_name.failed | grep 'klee' > ci/$test_name.failed_klee
 cat ci/$test_name.failed | grep 'llvm-as' > ci/$test_name.failed_llvm-as
 cat ci/$test_name.failed | grep 'CPSR' > ci/$test_name.cpsr_not_implemented
+cat ci/$test_name.failed | grep 'test failed' > ci/$test_name.failed_comparison
 echo "$(wc -l ci/$test_name.passed)"
 echo "$(wc -l ci/$test_name.failed)"
 echo "    $(wc -l ci/$test_name.failed_fracture)"
+echo "    $(wc -l ci/$test_name.failed_klee)"
 echo "    $(wc -l ci/$test_name.failed_llvm-as)"
-echo "    $(wc -l ci/$test_name.cpsr_not_implemented)"
+#echo "    $(wc -l ci/$test_name.cpsr_not_implemented)"
+echo "    $(wc -l ci/$test_name.failed_comparison)"
 cat ci/$test_name.failed
 
 exit $(wc -l ci/$test_name.failed)
