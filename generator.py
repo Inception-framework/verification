@@ -248,10 +248,23 @@ def execute_on_device_and_dump(id,changed_regs):
     # execute on the real device
     # and dump the differencies in the values of the registers before and after
     # execution
+   
+    # first get PC and SP from the elf TODO replace with grep from python
+    os.system("readelf -a %s/main%d.elf \
+                    | grep stack | awk '{print $2}' > %s/SPPC"%(folder,id,folder))
+    os.system("readelf -a %s/main%d.elf \
+                    | grep code  | awk '{print $5}' >>%s/SPPC"%(folder,id,folder))
+    
+    with open('%s/SPPC'%(folder),mode='rt') as sppc_file:
+        SP = int(sppc_file.readline(),16)
+        PC = int(sppc_file.readline(),16)
+    sppc_file.close()
+    os.system("rm %s/SPPC"%(folder))
+    #print(hex(SP),hex(PC))
     device.halt()
-    device.load_binary_in_sram('%s/main%d.bin'%(folder,id),0x10000000)
-    device.write_reg(15,0x10000000) # PC
-    device.write_reg(13,0x10000000) # SP
+    device.load_binary_in_sram('%s/main%d.bin'%(folder,id),PC)
+    device.write_reg(15,PC) # PC
+    device.write_reg(13,SP) # SP
     device.clear_all_regs()
     regs_initial = device.dump_all_regs()
     device.resume()
@@ -349,6 +362,7 @@ for i in range(0,tests_per_instruction):
         print(ldrstr_instr)
         #generate_ldrstr_code(["mov r12,#1"],["mov r12,#2"],"str r12,[sp,#4]!","ldr r12,[sp,#4]!",id)
         generate_ldrstr_code(init_strings,modify_strings,"LD"+ldrstr_instr,"LD"+ldrstr_instr,id)
+        #generate_ldrstr_code(init_strings,modify_strings,"LDRB R12,[SP,#-36]","LDRB R12, [SP ,#-36]",id)
         # compile the code for the real device
         os_run.run_catch_error('make FOLDER=%s ID=%d'%(folder,id),cont)
         # run on the real device and dump
