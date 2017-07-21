@@ -260,8 +260,10 @@ def execute_on_device_and_dump(id,changed_regs):
         PC = int(sppc_file.readline(),16)
     sppc_file.close()
     os.system("rm %s/SPPC"%(folder))
-    #print(hex(SP),hex(PC))
+    print(hex(SP),hex(PC))
     device.halt()
+    #for i in range(SP,SP-1025,-4):
+    #    device.write(i,0)
     device.load_binary_in_sram('%s/main%d.bin'%(folder,id),PC)
     device.write_reg(15,PC) # PC
     device.write_reg(13,SP) # SP
@@ -361,7 +363,9 @@ for i in range(0,tests_per_instruction):
     for ldrstr_instr in ldrstr_instructions:
         print(ldrstr_instr)
         #generate_ldrstr_code(["mov r12,#1"],["mov r12,#2"],"str r12,[sp,#4]!","ldr r12,[sp,#4]!",id)
-        generate_ldrstr_code(init_strings,modify_strings,"LD"+ldrstr_instr,"LD"+ldrstr_instr,id)
+        #generate_ldrstr_code(["mov r0,#1"],["mov r0,#2"],"LDMDB SP!, {R7, R6, R12, LR, R4, R7, R5, R9, R3, R8}","LDMDB SP!, {R7, R6, R12, LR, R4, R7, R5, R9, R3, R8}",id)
+        #generate_ldrstr_code(init_strings,modify_strings,"LD"+ldrstr_instr,"LD"+ldrstr_instr,id)
+        generate_ldrstr_code(init_strings,"","LD"+ldrstr_instr,"",id)
         #generate_ldrstr_code(init_strings,modify_strings,"LDRB R12,[SP,#-36]","LDRB R12, [SP ,#-36]",id)
         # compile the code for the real device
         os_run.run_catch_error('make FOLDER=%s ID=%d'%(folder,id),cont)
