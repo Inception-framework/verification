@@ -1,0 +1,124 @@
+VERSION
++2df3c205e089f12567b6e686e365bae739a5b65d Analyzer (heads/master)
++3ab51c0d45f5b3d5a434d02501450ca79d48ade7 Compiler (heads/master)
++594cd7828da069bd1c6555d6ae51ac4aca0260ac Inception-compiler-verif
+(heads/master)
+
+NOTES
+notice that in all these cases the final value of SP is ok,
+but results are wrong
+
+        pointer type      return type
+LDR ->  (int8_t*)stack    int32_t
+LDRB -> (int8_t*)stack    int8_t
+
+stack initialization
+sp = 0x20001000
+
+ldr stack[sp+1025*4] -> 0
+...
+ldr stack[sp+1*4]    -> 1024
+ldr stack[sp]        -> 1025
+ldr stack[sp-1*4]    -> 1026
+
+if i aligned (0,4,8,...)
+32 bits of stack[sp-i] = 1025+i/4
+
+BUGS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+4) LDRB R12, [SP]
+device: 1
+klee: 1025
+NOTE: clearly, fracture's load loads the entire word instead of loading the LSB
+only.
+
+6) LDRB R12, [SP ,#-36]
+device: 10
+klee: 1025
+NOTE: the device does byte stack[sp-36]=0xa
+      fracture has 2 bugs:
+      a) it does stack[sp] instead of [sp-36]
+      b) it reads 32 bits 
+
+12) LDR R12, [SP] ,#-36
+device: 1025
+klee: 1034
+NOTE: fracture does stack[sp-36] instead of [sp]
+
+13) LDRB R12, [SP] ,#-36
+device: 1                                    
+klee: 10
+NOTE: fracture does stack[sp-36] instead of [sp]
+
+14) LDRH R12, [SP] ,#-36
+device: 1025
+klee: 1034
+NOTE: fracture does stack[sp-36] instead of [sp]
+to check: does it load half word only?
+
+16) mov R1,#0x47
+    LDR R12, [SP, +R1, LSL #2]
+device: 954
+klee: 4227858435
+NOTE: 0x47 << 2 = 284
+      1025-284/4 = 954
+      there is an error in fracture
+
+      %SP1 = load i32* @SP
+      %R1_2 = load i32* @R1
+      %R1_3 = lshr i32 %R1_2, 2
+      %SP2 = add i32 %SP1, %R1_3
+      %SP3 = inttoptr i32 %SP2 to i32*
+      %SP4 = load i32* %SP3
+      store i32 %SP4, i32* @R12
+
+      lshr is wrong!! (logical shift right)
+      it should be shift left: shl (tested by hand, it works)
+
+18) mov R1,#0x47
+    LDRB R12, [SP, +R1, LSL #2]
+device: 186
+klee: 3
+NOTE: same error as 16)
+
+20) LDRH R12, [SP, +R1, LSL #2]
+device: 954
+klee: 3
+NOTE: same error as 16)
+
+21) LDRD R2, R4, [SP]
+device: 1025,1024
+klee:   1024,1025
+NOTE:   right: r2=[sp]   r4=[sp+4]
+        wrong: r2=[sp+4] r4=[sp]
+
+22) LDRD R2, R4, [SP]!
+same as 21)
+
+23) LDRD R2, R4, [SP ,#-36]
+device: 1034,1033
+klee:   1033,1034
+NOTE same as 22)
+
+24) LDRD R2, R4, [SP ,#-36]!
+same as 23)
+
+25) LDRD R2, R4, [SP] ,#-36
+device: 1025,1024
+klee:   1033,1034
+NOTE: problem a) r2,r4 swapped as in 23)
+      problem b) sp should not be incremented, as in 13)
+
+
+for the following last two cases, maybe we should try with
+the reglist in order and with different registers to make 
+debugging easier
+
+28) LDMDB SP, {R7, R6, R12, LR, R4, R7, R5, R9, R3, R8}
+device: 1030 1031 1027 1026 1033 1030 1032 1028 1034 1029
+klee:   1030 1029 1033 1034 1027 1030 1028 1032 1026 1031
+NOTE: it looks like in fracture there are the same errors
+as in previous cases
+
+29) LDMDB SP!, {R7, R6, R12, LR, R4, R7, R5, R9, R3, R8}
+same as 28)
