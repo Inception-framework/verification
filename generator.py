@@ -214,9 +214,44 @@ def generate_ldrstr_code(init_strings,modify_strings,ldrstr_string1,ldrstr_strin
     # generate the test code
     with open('%s/main%d.c'%(folder,id),mode='wt') as main_file:
         main_file.write("#include <stdlib.h>\n")
+        main_file.write("int STACK[2050];")
+        #main_file.write("int i;")
         main_file.write("__attribute__((naked))\n")
-        main_file.write("void main(void){\n")
-       
+        main_file.write("void foo(void){\n")
+ 
+        # set stack, faster here than through jtag       
+        main_file.write("  #ifndef KLEE\n")
+        main_file.write('  __asm volatile("mov r0,#0");\n')
+        main_file.write('  __asm volatile("mov r1,#0");\n')
+        main_file.write('  __asm volatile("add r1,r1,#1025");\n')
+        main_file.write('  __asm volatile("mov r2,sp");\n')
+        #main_file.write('  __asm volatile("add r2,#1025");\n')
+        main_file.write('  __asm volatile("loop:");\n')
+        main_file.write('  __asm volatile("str r1,[r2]");\n')
+        main_file.write('  __asm volatile("sub r0,r0,#1");\n')
+        main_file.write('  __asm volatile("add r1,r1,#1");\n')
+        main_file.write('  __asm volatile("sub r2,r2,#4");\n')
+        main_file.write('  __asm volatile("cmp r0,#-1024");\n')
+        main_file.write('  __asm volatile("bge loop");\n')
+        main_file.write('  __asm volatile("mov r0,#0");\n')
+        main_file.write('  __asm volatile("mov r1,#0");\n')
+        #main_file.write('  __asm volatile("add r1,r1,#1025");\n')
+        main_file.write('  __asm volatile("mov r2,#0");\n')
+        main_file.write('  __asm volatile("add r2,#1025");\n')
+        main_file.write('  __asm volatile("lsl r2,#2");\n')
+        main_file.write('  __asm volatile("add r2,sp");\n')
+        main_file.write('  __asm volatile("loop2:");\n')
+        main_file.write('  __asm volatile("str r1,[r2]");\n')
+        main_file.write('  __asm volatile("sub r0,r0,#1");\n')
+        main_file.write('  __asm volatile("add r1,r1,#1");\n')
+        main_file.write('  __asm volatile("sub r2,r2,#4");\n')
+        main_file.write('  __asm volatile("cmp r0,#-1024");\n')
+        main_file.write('  __asm volatile("bge loop2");\n')
+        main_file.write('  __asm volatile("mov r0,#0");\n')
+        main_file.write('  __asm volatile("mov r1,#0");\n')
+        main_file.write('  __asm volatile("mov r2,#0");\n')
+        main_file.write("  #endif\n")
+        
         # input operands
         for init_string in init_strings:
             if init_string != "":
@@ -241,6 +276,13 @@ def generate_ldrstr_code(init_strings,modify_strings,ldrstr_string1,ldrstr_strin
         main_file.write('  __asm volatile("bx lr");\n')
         main_file.write("  #endif\n")
         main_file.write("}\n")
+        main_file.write("void main(void){\n")
+        main_file.write("  int i;")
+        main_file.write("  for(i=0;i<2050;i++){\n")
+        main_file.write("      STACK[2050-1-i]=i;\n")
+        main_file.write("  }\n")
+        main_file.write("  foo();\n")
+        main_file.write("}\n")
     main_file.close
 
 
@@ -262,8 +304,10 @@ def execute_on_device_and_dump(id,changed_regs):
     os.system("rm %s/SPPC"%(folder))
     print(hex(SP),hex(PC))
     device.halt()
-    #for i in range(SP,SP-1025,-4):
-    #    device.write(i,0)
+    #j=0
+    #for i in range(0x20000000,0x20000000+8200*4,4):
+    #    device.write(i,j)
+    #    j += 1
     device.load_binary_in_sram('%s/main%d.bin'%(folder,id),PC)
     device.write_reg(15,PC) # PC
     device.write_reg(13,SP) # SP
@@ -374,10 +418,13 @@ for i in range(0,tests_per_instruction):
         execute_on_device_and_dump(id,changed_regs)
         device.halt()
         device.display_all_regs()
-        device.read(0x10000004)
+        #for i in range(0,2050):
+        #    device.read(0x20001000-i*4+1025*4)
+        device.read(0x20001000-36)
         device.resume()
         id += 1
-        #break
+        if id == 7:
+            break
 
 with open('%s/Ntests'%(folder),mode='wt') as Ntests_file:
     Ntests_file.write("%d\n"%(id))
