@@ -57,7 +57,7 @@ def generate_ldrstr(seed):
     Rd1 = random.choice(reglist_allowed)
     Rd2 = random.choice(reglist_allowed)
  
-    init_regs = ', '.join([Rd,Rd1,Rd2])+", "+reglist[1:len(reglist)-1]
+    init_regs = ', '.join([Rd,Rd1,Rd2,Rm])+", "+reglist[1:len(reglist)-1]
     init_regs = init_regs.split(', ')
     if "PC" in init_regs:
         init_regs.remove("PC")
