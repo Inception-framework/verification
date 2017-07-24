@@ -37,9 +37,22 @@ def generate_ldrstr(seed):
     t = [""]
     
     random.seed(seed)
-    Rd = random.choice(list(device.regs.keys()))
-    Rn = random.choice(list(device.regs.keys()))
-    Rm = random.choice(list(device.regs.keys()))
+    reglist_allowed = list(device.regs.keys())
+    reglist_allowed.remove("CPSR")
+    reglist_allowed.remove("PC")
+    reglist_allowed.remove("SP")
+    Rd = random.choice(reglist_allowed)
+    reglist_allowed = list(device.regs.keys())
+    reglist_allowed.remove("CPSR")
+    reglist_allowed.remove("PC")
+    Rn = random.choice(reglist_allowed)
+    while(Rd == Rn):
+        Rn = random.choice(reglist_allowed)
+    reglist_allowed = list(device.regs.keys())
+    reglist_allowed.remove("CPSR")
+    reglist_allowed.remove("PC")
+    reglist_allowed.remove("SP")
+    Rm = random.choice(reglist_allowed)
     #offset = random.randint(-4095,4095)
     offset = random.choice(range(-100,100,4)) #always ok
     opsh = "LSL #2" #always ok
@@ -67,9 +80,14 @@ def generate_ldrstr(seed):
         init_regs.remove("CPSR")
     init_regs = [list(device.regs.keys()).index(reg_name) for reg_name in init_regs]
     init_regs = list(set(init_regs))
-    base_reg  = [list(device.regs.keys()).index(Rn)]
+    base_reg  = list(device.regs.keys()).index(Rn)
     ldrstr_instructions = []
     
+    #if(Rn == "PC"):
+    #  wb = ""
+    #else:
+    wb = "!"
+ 
     # considering that we do not have {T}...
     
     ## immidiate offset
@@ -93,7 +111,7 @@ def generate_ldrstr(seed):
                                    [" %s, [%s"%(Rd,Rn)],
                                    [""," ,#%s"%(offset)],
                                    ["]"],
-                                   ["","!"]))
+                                   ["",wb]))
     #  postindexed immediate
     combs += list(itertools.product(["R"],
                                    ["","B","H"],
@@ -129,7 +147,7 @@ def generate_ldrstr(seed):
                                    [" %s, %s, [%s"%(Rd1,Rd2,Rn)],
                                    [""," ,#%s"%(offset)],
                                    ["]"],
-                                   ["","!"]))
+                                   ["",wb]))
     #  postindexed immediate
     combs += list(itertools.product(["R"],
                                    ["D"],
@@ -161,7 +179,7 @@ def generate_ldrstr(seed):
                                    #["IA","IB","DA","DB"],
                                    ["IA","DB"],
                                    [" %s"%(Rn)],
-                                   ["","!"],
+                                   ["",wb],
                                    [", %s"%(reglist)]))
     
     
