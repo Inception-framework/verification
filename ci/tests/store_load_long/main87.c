@@ -30,24 +30,29 @@ void foo(void){
   __asm volatile("mov r1,#0");
   __asm volatile("mov r2,#0");
   #endif
-  __asm volatile("mov R0,#0x6c"); 
-  __asm volatile("mov R2,#0x51"); 
-  __asm volatile("mov R4,#0xc9"); 
-  __asm volatile("mov R9,#0xe3"); 
-  __asm volatile("mov R10,#0x12"); 
-  __asm volatile("mov R11,#0xba"); 
-  __asm volatile("mov R12,#0xa3"); 
-  __asm volatile("mov R14,#0xd8"); 
-  __asm volatile("STMIA SP!, {LR, R2, R11, R12, R10, LR, R4}");
-  __asm volatile("mov R0,#0x12"); 
-  __asm volatile("mov R2,#0xdc"); 
-  __asm volatile("mov R4,#0xbe"); 
-  __asm volatile("mov R9,#0x89"); 
-  __asm volatile("mov R10,#0x0e"); 
-  __asm volatile("mov R11,#0xee"); 
-  __asm volatile("mov R12,#0xc2"); 
-  __asm volatile("mov R14,#0x54"); 
-  __asm volatile("LDMIA SP!, {LR, R2, R11, R12, R10, LR, R4}");
+  __asm volatile("mov R9,sp"); 
+  __asm volatile("mov R0,#0x4d"); 
+  __asm volatile("mov R1,#0x4d"); 
+  __asm volatile("mov R3,#0x07"); 
+  __asm volatile("mov R4,#0x51"); 
+  __asm volatile("mov R6,#0x9a"); 
+  __asm volatile("mov R7,#0x89"); 
+  __asm volatile("mov R8,#0xc6"); 
+  __asm volatile("mov R10,#0xca"); 
+  __asm volatile("mov R11,#0x44"); 
+  __asm volatile("mov R12,#0x31"); 
+  __asm volatile("STMIA R9!, {R10, R7, R11, R10, R1, R10, R0, R7, R4, R8, R3, R3, R12, R7, R8, R8}");
+  __asm volatile("mov R0,#0x76"); 
+  __asm volatile("mov R1,#0xc7"); 
+  __asm volatile("mov R3,#0x20"); 
+  __asm volatile("mov R4,#0x15"); 
+  __asm volatile("mov R6,#0x0f"); 
+  __asm volatile("mov R7,#0xf2"); 
+  __asm volatile("mov R8,#0xda"); 
+  __asm volatile("mov R10,#0xe3"); 
+  __asm volatile("mov R11,#0xbb"); 
+  __asm volatile("mov R12,#0x12"); 
+  __asm volatile("LDMIA R9!, {R10, R7, R11, R10, R1, R10, R0, R7, R4, R8, R3, R3, R12, R7, R8, R8}");
   #ifndef KLEE
   while(1);
   #else

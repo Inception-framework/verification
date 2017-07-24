@@ -30,25 +30,21 @@ void foo(void){
   __asm volatile("mov r1,#0");
   __asm volatile("mov r2,#0");
   #endif
-  __asm volatile("mov R6,sp"); 
-  __asm volatile("mov R4,#0x6f"); 
-  __asm volatile("mov R5,#0x90"); 
-  __asm volatile("mov R7,#0x30"); 
-  __asm volatile("mov R8,#0x4b"); 
-  __asm volatile("mov R9,#0x32"); 
-  __asm volatile("mov R10,#0xa9"); 
-  __asm volatile("mov R12,#0x33"); 
-  __asm volatile("mov R14,#0xde"); 
-  __asm volatile("STRD R5, R10, [R6 ,#4]!");
-  __asm volatile("mov R4,#0x47"); 
-  __asm volatile("mov R5,#0x47"); 
-  __asm volatile("mov R7,#0x80"); 
-  __asm volatile("mov R8,#0x9e"); 
-  __asm volatile("mov R9,#0x25"); 
-  __asm volatile("mov R10,#0xf1"); 
-  __asm volatile("mov R12,#0xb5"); 
-  __asm volatile("mov R14,#0xa1"); 
-  __asm volatile("LDRD R5, R10, [R6 ,#4]!");
+  __asm volatile("mov R9,sp"); 
+  __asm volatile("mov R1,#0x6b"); 
+  __asm volatile("mov R2,#0xf9"); 
+  __asm volatile("mov R6,#0xc7"); 
+  __asm volatile("mov R7,#0x01"); 
+  __asm volatile("mov R11,#0x88"); 
+  __asm volatile("mov R14,#0x34"); 
+  __asm volatile("STRD R6, LR, [R9 ,#92]!");
+  __asm volatile("mov R1,#0x30"); 
+  __asm volatile("mov R2,#0x0e"); 
+  __asm volatile("mov R6,#0xdd"); 
+  __asm volatile("mov R7,#0xe4"); 
+  __asm volatile("mov R11,#0x75"); 
+  __asm volatile("mov R14,#0xa2"); 
+  __asm volatile("LDRD R6, LR, [R9 ,#92]!");
   #ifndef KLEE
   while(1);
   #else
