@@ -427,21 +427,21 @@ id = 0
 #              id += 1
 #              #input("Press any key to continue")
 #
-init_regs,base_reg,ldrstr_instructions = ldrstr.generate_ldrstr(seed)
-changed_regs = init_regs+base_reg
-init_strings = []
-modify_strings = []
-print (init_regs)
-for init_reg in init_regs:
-    #Rn_val = random.randint(0,2**32-1)
-    Rn_val = random.randint(0,2**8-1)
-    Rn_val2 = random.randint(0,2**8-1)
-    while Rn_val2 == Rn_val:
-        Rn_val2 = random.randint(0,2**8-1)
-    append_init_reg_strings(init_strings,init_reg,Rn_val)
-    append_init_reg_strings(modify_strings,init_reg,Rn_val2)
-#print (init_strings)
 for i in range(0,tests_per_instruction):
+    init_regs,base_reg,ldrstr_instructions = ldrstr.generate_ldrstr(seed+i)
+    changed_regs = init_regs+base_reg
+    init_strings = []
+    modify_strings = []
+    print (init_regs)
+    for init_reg in init_regs:
+        #Rn_val = random.randint(0,2**32-1)
+        Rn_val = random.randint(0,2**8-1)
+        Rn_val2 = random.randint(0,2**8-1)
+        while Rn_val2 == Rn_val:
+            Rn_val2 = random.randint(0,2**8-1)
+        append_init_reg_strings(init_strings,init_reg,Rn_val)
+        append_init_reg_strings(modify_strings,init_reg,Rn_val2)
+    #print (init_strings)
     for ldrstr_instr in ldrstr_instructions:
         print(ldrstr_instr)
         #generate_ldrstr_code(["mov r12,#1"],["mov r12,#2"],"str r12,[sp,#4]!","ldr r12,[sp,#4]!",id)
@@ -461,7 +461,7 @@ for i in range(0,tests_per_instruction):
         device.read(0x20001000-36)
         device.resume()
         id += 1
-        #id == 7:
+        #id == 3:
         #    break
 
 with open('%s/Ntests'%(folder),mode='wt') as Ntests_file:
