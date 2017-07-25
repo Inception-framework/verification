@@ -117,9 +117,7 @@ printf "%s\n" "--> ok"
         PRINT_ARGS=''
 ##fi
 
-{
-$TARGET_PATH/$TARGET $PRINT_ARGS $FRACTURE_ARGS 
-} &> /dev/null
+$TARGET_PATH/$TARGET $PRINT_ARGS $FRACTURE_ARGS 2>&1 >/dev/null
 if [ $? != 0 ]; then
 	printf "%s\n" "--> $1 fracture failed"
 	exit 1;
