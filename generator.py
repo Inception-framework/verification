@@ -96,58 +96,62 @@ else:
 # possible operations
 # TODO continue, somehow we must init the carry, consider CPSR etc...
 operations = OrderedDict()
+#operations.update({"Shift" : 
+#                     [
+#                       (("LSL",),
+#                        ("Rd","Rm","lsl"),
+#                        ("N","Z","C"),
+#                        ("Rd:=LSL(Rm,Rslsh)")
+#                       ),
+#                       (("LSL",),
+#                        ("Rd","Rm","Rslsl"),
+#                        ("N","Z","C"),
+#                        ("Rd:=LSL(Rm,Rslsh)")
+#                       ),
+#                       (("LSR","ASR"),
+#                        ("Rd","Rm","sr"),
+#                        ("N","Z","C"),
+#                        ("Rd:=LSL(Rm,Rslsh)")
+#                       ),
+#                       (("LSR","ASR"),
+#                        ("Rd","Rm","Rssr"),
+#                        ("N","Z","C"),
+#                        ("Rd:=LSL(Rm,Rslsh)")
+#                       ),
+#                       (("ROR",),
+#                        ("Rd","Rm","Rror"),
+#                        ("N","Z","C"),
+#                        ("Rd:=ROR(Rm,Rslsh)")
+#                       ),
+#                       (("ROR",),
+#                        ("Rd","Rm","ror"),
+#                        ("N","Z","C"),
+#                        ("Rd:=ROR(Rm,Rslsh)")
+#                       )
+#                    ]
+#                   })
 operations.update({"Add" : 
                      [
-                       (("LSL",),
-                        ("Rd","Rm","lsl"),
-                        ("N","Z","C"),
-                        ("Rd:=LSL(Rm,Rslsh)")
+                       (("ADD",),
+                        ("Rd","Rn","<Operand2>"),
+                        ("N","Z","C","V"),
+                        ("Rd:=Rn+Operand2")
                        ),
-                       (("LSL",),
-                        ("Rd","Rm","Rslsl"),
-                        ("N","Z","C"),
-                        ("Rd:=LSL(Rm,Rslsh)")
+                       (("ADDS",),
+                        ("Rd","Rn","<Operand2>"),
+                        ("N","Z","C","V"),
+                        ("Rd:=Rn+Operand2")
                        ),
-                       (("LSR","ASR"),
-                        ("Rd","Rm","sr"),
-                        ("N","Z","C"),
-                        ("Rd:=LSL(Rm,Rslsh)")
-                       ),
-                       (("LSR","ASR"),
-                        ("Rd","Rm","Rssr"),
-                        ("N","Z","C"),
-                        ("Rd:=LSL(Rm,Rslsh)")
-                       ),
-                       (("ROR",),
-                        ("Rd","Rm","Rror"),
-                        ("N","Z","C"),
-                        ("Rd:=ROR(Rm,Rslsh)")
-                       ),
-                       (("ROR",),
-                        ("Rd","Rm","ror"),
-                        ("N","Z","C"),
-                        ("Rd:=ROR(Rm,Rslsh)")
-                       )#,
-                      # (("ADD",),
-                      #  ("Rd","Rn","<Operand2>"),
-                      #  ("N","Z","C","V"),
-                      #  ("Rd:=Rn+Operand2")
-                      # ),
-                      # (("ADDS",),
-                      #  ("Rd","Rn","<Operand2>"),
-                      #  ("N","Z","C","V"),
-                      #  ("Rd:=Rn+Operand2")
-                      # ),
                       # (("ADC","ADCS"),
                       #  ("Rd","Rn","<Operand2>"),
                       #  ("N","Z","C","V"),
                       #  ("Rd:=Rn+Operand2+Carry")
                       # ),
-                      # (("ADD",),
-                      #  ("Rd","Rn","#<imm12>"),
-                      #  (),
-                      #  ("Rd:=Rn+imm12")
-                      # )
+                       (("ADD",),
+                        ("Rd","Rn","#<imm12>"),
+                        (),
+                        ("Rd:=Rn+imm12")
+                       )
                      ]
                    })
 #operations.update({"Subtract" : 
@@ -172,7 +176,7 @@ operations.update({"Add" :
 #
 # possible operand2
 # TODO continue, more values are possible, imm8 should be imm8m
-operand2 = ( "#<imm8>", "Rn" )
+operand2 = ( "#<imm8>", "Rn", "Rn, shift" )
 
 ## expanding Operand2
 operations_expanded = OrderedDict()
@@ -389,6 +393,17 @@ for i in range(0,tests_per_instruction):
                      Rn_val = random.randint(0,2**8-1)
                      append_init_reg_strings(init_strings,Rn,Rn_val)
                      inst_string += ", R%d"%(Rn)
+                     # only MSB because of bug in write reg 32 bits...
+                     changed_regs.append(Rn)
+                  elif operand in ["Rn, shift"]:
+                     Rn = random.randint(0,12)
+                     # 32 not supported yet
+                     #Rn_val = random.randint(0,2**32-1)
+                     Rn_val = random.randint(0,2**8-1)
+                     append_init_reg_strings(init_strings,Rn,Rn_val)
+                     inst_string += ", R%d"%(Rn)
+                     inst_string += random.choice([", lsl",", lsr",", asr",", ror"]);
+                     inst_string += " #%d"%(random.randint(1,31))
                      # only MSB because of bug in write reg 32 bits...
                      changed_regs.append(Rn)
                   elif operand in ["Rror"]:
