@@ -1,9 +1,9 @@
 #include <stdlib.h>
 __attribute__((naked))
 void main(void){
-  __asm volatile("mov R3,#0x85"); 
-  __asm volatile("mov R9,#0x0b"); 
-  __asm volatile("ASR R5, R3, R9");
+  __asm volatile("mov R8,#0x94"); 
+  __asm volatile("mov R7,#0x1f"); 
+  __asm volatile("LSL R8, R8, R7");
   #ifndef KLEE
   while(1);
   #else

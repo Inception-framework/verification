@@ -1,10 +1,10 @@
 Save current version info in /home/giovanni/phd/Inception/Inception-compiler-verif/ci/tests/shift_0/version_generator.log
 Inception
 * master
-94a85fffd2e071fb7a91b8fcb0ebf7b38bd9c4e4
+8f60452147b8827b1f1b1797be82c2993088cc8a
  2df3c205e089f12567b6e686e365bae739a5b65d Analyzer (heads/master)
-+7d9d5b1c3a2dc9a6363bfb205509caea72f94daa Compiler (heads/master)
-+abde0d9873cd8be0ebabcda574a638551bc9e798 Inception-compiler-verif (heads/master)
+ 47251a71a654d81421777c5838742dc361ce3f95 Compiler (heads/master)
++423b0ac873218d25a61a08a622ab585ae3d16fd9 Inception-compiler-verif (heads/master)
  d4fc79bb42cb2bcbb51b8069afdec02c33a48b22 RTDebugger (heads/master)
  bbc1fc0372863109935ff6dea0943cb7943504ef RTDebugger-driver (realease_01-76-gbbc1fc0)
  3883546d70ace13df254e6e66f0735644a30e23a Samples (heads/master)
