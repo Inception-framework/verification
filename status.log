@@ -1,0 +1,56 @@
+VERSION
+Inception
+* master
+8f60452147b8827b1f1b1797be82c2993088cc8a
+ 2df3c205e089f12567b6e686e365bae739a5b65d Analyzer (heads/master)
++1d20d429d9e04d4dbae93c884a01994f962d551d Compiler (heads/master)
++7f9a6a38889bf1462c8ee29044846528b3343ada Inception-compiler-verif
+(heads/master)
+ d4fc79bb42cb2bcbb51b8069afdec02c33a48b22 RTDebugger (heads/master)
+ bbc1fc0372863109935ff6dea0943cb7943504ef RTDebugger-driver
+(realease_01-76-gbbc1fc0)
+ 3883546d70ace13df254e6e66f0735644a30e23a Samples (heads/master)
+ daf6f5c94d48193b15c0eb2feed56b70717cb4a1 Stubs (heads/master)
+
+
+TYPES
+adc
+  CPSR not implemented yet
+
+
+add_add_shift_no_carry
+  shift does not work for now, it is ignored
+
+
+add_no_carry
+  working
+
+
+single_load
+  working
+
+
+single_load_long
+  there are 2 cases in which the value retrieved for Rm is wrong
+  it looks like a bug outside our part
+
+
+load_load_long
+  there are 2 cases in which the value retrieved for Rm is wrong
+  it looks like a bug outside our part
+
+
+store_load
+  store not implemented yet
+store_load_0
+  store not implemented yet
+store_load_long
+  store not implemented yet
+
+
+shift_0
+  working
+shift_1
+  working
+
+
