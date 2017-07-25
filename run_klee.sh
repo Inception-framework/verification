@@ -20,7 +20,9 @@ run_klee() {
   rm -rf klee-* >&-
 
   # Run klee
-  klee -search=dfs main${arg1}_merged.bc  >&-
+  {
+  klee -search=dfs main${arg1}_merged.bc
+  }&> /dev/null
   if [ $? != 0 ]; then
           printf "---> test $arg1 running klee failed"
           exit 1;
