@@ -132,26 +132,26 @@ operations = OrderedDict()
 #                   })
 operations.update({"Add" : 
                      [
-                       (("ADD",),
-                        ("Rd","Rn","<Operand2>"),
-                        ("N","Z","C","V"),
-                        ("Rd:=Rn+Operand2")
-                       ),
-                       (("ADDS",),
-                        ("Rd","Rn","<Operand2>"),
-                        ("N","Z","C","V"),
-                        ("Rd:=Rn+Operand2")
-                       ),
-                      # (("ADC","ADCS"),
+                      # (("ADD",),
                       #  ("Rd","Rn","<Operand2>"),
                       #  ("N","Z","C","V"),
-                      #  ("Rd:=Rn+Operand2+Carry")
+                      #  ("Rd:=Rn+Operand2")
                       # ),
-                       (("ADD",),
-                        ("Rd","Rn","#<imm12>"),
-                        (),
-                        ("Rd:=Rn+imm12")
-                       )
+                      # (("ADDS",),
+                      #  ("Rd","Rn","<Operand2>"),
+                      #  ("N","Z","C","V"),
+                      #  ("Rd:=Rn+Operand2")
+                      # ),
+                       (("ADC","ADCS"),
+                        ("Rd","Rn","<Operand2>"),
+                        ("N","Z","C","V"),
+                        ("Rd:=Rn+Operand2+Carry")
+                       )#,
+                      # (("ADD",),
+                      #  ("Rd","Rn","#<imm12>"),
+                      #  (),
+                      #  ("Rd:=Rn+imm12")
+                      # )
                      ]
                    })
 #operations.update({"Subtract" : 
@@ -358,9 +358,18 @@ def execute_on_device_and_dump(id,changed_regs):
             if(final_val != initial_val or \
                 list(device.regs.keys()).index(final_name) in changed_regs):             
                 if(initial_name != "PC"):
-                    reg_diff_file.write("%s\n%d\n"%(final_name,final_val))
-                #elif(initial_name == "CPSR"):
-                #    reg_diff_file.write("%s\n%d\n"%(final_name,final_val))
+                    if(initial_name != "CPSR"):
+                        reg_diff_file.write("%s\n%d\n"%(final_name,final_val))
+                    else: 
+                        # dump individual flags
+                        reg_diff_file.write("%s\n%d\n"%("NF", \
+                                                       (final_val >> 31) & 1))
+                        reg_diff_file.write("%s\n%d\n"%("ZF", \
+                                                       (final_val >> 30) & 1))
+                        reg_diff_file.write("%s\n%d\n"%("CF", \
+                                                       (final_val >> 29) & 1))
+                        reg_diff_file.write("%s\n%d\n"%("VF", \
+                                                       (final_val >> 28) & 1))
         reg_diff_file.close
 
 
