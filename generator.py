@@ -142,7 +142,8 @@ operations.update({"Add" :
                       #  ("N","Z","C","V"),
                       #  ("Rd:=Rn+Operand2")
                       # ),
-                       (("ADC","ADCS"),
+                       #(("ADC","ADCS"),
+                       (("ADCS",),
                         ("Rd","Rn","<Operand2>"),
                         ("N","Z","C","V"),
                         ("Rd:=Rn+Operand2+Carry")
@@ -176,7 +177,7 @@ operations.update({"Add" :
 #
 # possible operand2
 # TODO continue, more values are possible, imm8 should be imm8m
-operand2 = ( "#<imm8>", "Rn", "Rn, shift" )
+operand2 = ( "#<imm8>", "Rn")#, "Rn, shift" )
 
 ## expanding Operand2
 operations_expanded = OrderedDict()
@@ -206,14 +207,18 @@ for operation,suboperations in operations.items():
 # be sure that val is an integer on 32 bits
 def append_init_reg_strings(init_strings,Rn,Rn_val):
     # mov+sh not working
-   # for sh in range(0,32,8):
-   #     masked_val = (Rn_val & (0x000000ff << sh))>>sh
-   #     init_strings.append("mov R%d,#0x%02x,#%d"%(Rn,masked_val,sh))
-    init_strings.append("mov R%d,#0x%02x"%(Rn,Rn_val))
+    init_strings.append("mov R%d,#0"%(Rn))
+    for sh in range(0,32,8):
+        masked_val = (Rn_val & (0xff000000 >> sh))>>(24-sh)
+        init_strings.append("add R%d,R%d,#0x%02x"%(Rn,Rn,masked_val))
+        if sh != 24:
+            init_strings.append("lsl R%d,R%d,#%d"%(Rn,Rn,8))
+    #init_strings.append("mov R%d,#0x%02x"%(Rn,Rn_val))
 
-def append_init_carry_in(init_strings,carry_in):
-    print ("Init carry in not supported yet")
-    pass
+def append_init_flags(init_strings):
+    # put all flags at 0
+    init_strings.append("mov r0,#0");
+    init_strings.append("adds r0,r0,#1");
 
 # generate C code with inline ASM
 def generate_test_code(init_strings,inst_string,return_string,id):
@@ -347,6 +352,7 @@ def execute_on_device_and_dump(id,changed_regs):
     device.write_reg(13,SP) # SP
     device.clear_all_regs()
     regs_initial = device.dump_all_regs()
+    #print(regs_initial)
     device.resume()
     time.sleep(0.01)
     device.halt()
@@ -386,6 +392,11 @@ for i in range(0,tests_per_instruction):
               if(updates != ()):
                   changed_regs.append(list(device.regs.keys()).index('CPSR'))
               init_strings = []
+              # implicit operand
+              if actions.find("Carry") > 0:
+                  # carry_in is a source operand
+                  carry_in = random.randint(0,1)
+                  append_init_flags(init_strings)
               inst_string = instruction
               return_string = ""
               for operand in operands:
@@ -397,18 +408,16 @@ for i in range(0,tests_per_instruction):
                      #return_string += "mov r0,r%d"%(Rd)
                   elif operand in ["Rn","Rm"]:
                      Rn = random.randint(0,12)
-                     # 32 not supported yet
-                     #Rn_val = random.randint(0,2**32-1)
-                     Rn_val = random.randint(0,2**8-1)
+                     Rn_val = random.randint(0,2**32-1)
+                     #Rn_val = random.randint(0,2**8-1)
                      append_init_reg_strings(init_strings,Rn,Rn_val)
                      inst_string += ", R%d"%(Rn)
                      # only MSB because of bug in write reg 32 bits...
                      changed_regs.append(Rn)
                   elif operand in ["Rn, shift"]:
                      Rn = random.randint(0,12)
-                     # 32 not supported yet
-                     #Rn_val = random.randint(0,2**32-1)
-                     Rn_val = random.randint(0,2**8-1)
+                     Rn_val = random.randint(0,2**32-1)
+                     #Rn_val = random.randint(0,2**8-1)
                      append_init_reg_strings(init_strings,Rn,Rn_val)
                      inst_string += ", R%d"%(Rn)
                      inst_string += random.choice([", lsl",", lsr",", asr",", ror"]);
@@ -448,11 +457,6 @@ for i in range(0,tests_per_instruction):
                   elif operand == "#<imm12>":
                      imm12_val = random.randint(0,2**12-1)
                      inst_string += ", #0x%03x"%(imm12_val)
-              # implicit operand
-              if actions.find("Carry") > 0:
-                  # carry_in is a source operand
-                  carry_in = random.randint(0,1)
-                  append_init_carry_in(init_strings,carry_in)
 
               # generate c code
               generate_test_code(init_strings,inst_string,return_string,id)
@@ -480,11 +484,11 @@ for i in range(0,tests_per_instruction):
 #        init_strings.append("mov R%d,sp"%(base_reg))
 #        changed_regs.append(list(device.regs.keys()).index("SP"))
 #    for init_reg in init_regs:
-#        #Rn_val = random.randint(0,2**32-1)
-#        Rn_val = random.randint(0,2**8-1)
-#        Rn_val2 = random.randint(0,2**8-1)
+#        Rn_val = random.randint(0,2**32-1)
+#        #Rn_val = random.randint(0,2**8-1)
+#        Rn_val2 = random.randint(0,2**32-1)
 #        while Rn_val2 == Rn_val:
-#            Rn_val2 = random.randint(0,2**8-1)
+#            Rn_val2 = random.randint(0,2**32-1)
 #        append_init_reg_strings(init_strings,init_reg,Rn_val)
 #        append_init_reg_strings(modify_strings,init_reg,Rn_val2)
 #    #print (init_strings)
