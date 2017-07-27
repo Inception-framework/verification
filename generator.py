@@ -460,8 +460,8 @@ for i in range(0,tests_per_instruction):
                      inst_string += ", #0x%03x"%(imm12_val)
 
               # generate c code
-              #generate_test_code(init_strings,inst_string,return_string,id)
-              generate_test_code("",inst_string,"",id)
+              generate_test_code(init_strings,inst_string,return_string,id)
+              #generate_test_code("",inst_string,"",id)
               
               # compile the code for the real device
               os_run.run_catch_error('make FOLDER=%s ID=%d'%(folder,id),cont)
