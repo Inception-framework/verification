@@ -132,28 +132,28 @@ operations = OrderedDict()
 #                   })
 operations.update({"Add" : 
                      [
-                      # (("ADD",),
-                      #  ("Rd","Rn","<Operand2>"),
-                      #  ("N","Z","C","V"),
-                      #  ("Rd:=Rn+Operand2")
-                      # ),
-                      # (("ADDS",),
-                      #  ("Rd","Rn","<Operand2>"),
-                      #  ("N","Z","C","V"),
-                      #  ("Rd:=Rn+Operand2")
-                      # ),
-                       #(("ADC","ADCS"),
-                       (("ADCS",),
+                     #  (("ADD",),
+                     #   ("Rd","Rn","<Operand2>"),
+                     #   (),
+                     #   ("Rd:=Rn+Operand2")
+                     #  ),
+                       (("ADDS",),
                         ("Rd","Rn","<Operand2>"),
                         ("N","Z","C","V"),
-                        ("Rd:=Rn+Operand2+Carry")
-                       )#,
-                      # (("ADD",),
-                      #  ("Rd","Rn","#<imm12>"),
-                      #  (),
-                      #  ("Rd:=Rn+imm12")
-                      # )
-                     ]
+                        ("Rd:=Rn+Operand2")
+                       ),
+                     #  #(("ADC","ADCS"),
+                     #  (("ADCS",),
+                     #   ("Rd","Rn","<Operand2>"),
+                     #   ("N","Z","C","V"),
+                     #   ("Rd:=Rn+Operand2+Carry")
+                     #  )#,
+                     #  (("ADD",),
+                     #   ("Rd","Rn","#<imm12>"),
+                     #   (),
+                     #   ("Rd:=Rn+imm12")
+                     #  )
+                    ]
                    })
 #operations.update({"Subtract" : 
 #                     [
@@ -215,10 +215,11 @@ def append_init_reg_strings(init_strings,Rn,Rn_val):
             init_strings.append("lsl R%d,R%d,#%d"%(Rn,Rn,8))
     #init_strings.append("mov R%d,#0x%02x"%(Rn,Rn_val))
 
-def append_init_flags(init_strings):
+def append_init_flags(init_strings,changed_regs):
     # put all flags at 0
     init_strings.append("mov r0,#0");
     init_strings.append("adds r0,r0,#1");
+    changed_regs.append(list(device.regs.keys()).index('CPSR'))
 
 # generate C code with inline ASM
 def generate_test_code(init_strings,inst_string,return_string,id):
@@ -393,10 +394,10 @@ for i in range(0,tests_per_instruction):
                   changed_regs.append(list(device.regs.keys()).index('CPSR'))
               init_strings = []
               # implicit operand
-              if actions.find("Carry") > 0:
-                  # carry_in is a source operand
-                  carry_in = random.randint(0,1)
-                  append_init_flags(init_strings)
+              #if actions.find("Carry") > 0:
+              #    # carry_in is a source operand
+              #    carry_in = random.randint(0,1)
+              append_init_flags(init_strings,changed_regs)
               inst_string = instruction
               return_string = ""
               for operand in operands:
@@ -459,7 +460,8 @@ for i in range(0,tests_per_instruction):
                      inst_string += ", #0x%03x"%(imm12_val)
 
               # generate c code
-              generate_test_code(init_strings,inst_string,return_string,id)
+              #generate_test_code(init_strings,inst_string,return_string,id)
+              generate_test_code("",inst_string,"",id)
               
               # compile the code for the real device
               os_run.run_catch_error('make FOLDER=%s ID=%d'%(folder,id),cont)
