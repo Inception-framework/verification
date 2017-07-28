@@ -130,31 +130,41 @@ operations = OrderedDict()
 #                       )
 #                    ]
 #                   })
-operations.update({"Add" : 
+#operations.update({"Add" : 
+#                     [
+#                     #  (("ADD",),
+#                     #   ("Rd","Rn","<Operand2>"),
+#                     #   (),
+#                     #   ("Rd:=Rn+Operand2")
+#                     #  ),
+#                       (("ADDS",),
+#                        ("Rd","Rn","<Operand2>"),
+#                        ("N","Z","C","V"),
+#                        ("Rd:=Rn+Operand2")
+#                       ),
+#                     #  #(("ADC","ADCS"),
+#                     #  (("ADCS",),
+#                     #   ("Rd","Rn","<Operand2>"),
+#                     #   ("N","Z","C","V"),
+#                     #   ("Rd:=Rn+Operand2+Carry")
+#                     #  )#,
+#                     #  (("ADD",),
+#                     #   ("Rd","Rn","#<imm12>"),
+#                     #   (),
+#                     #   ("Rd:=Rn+imm12")
+#                     #  )
+#                    ]
+#                   })
+operations.update({"Compare" : 
                      [
-                     #  (("ADD",),
-                     #   ("Rd","Rn","<Operand2>"),
-                     #   (),
-                     #   ("Rd:=Rn+Operand2")
-                     #  ),
-                       (("ADDS",),
-                        ("Rd","Rn","<Operand2>"),
+                      (("CMP","CMN"),
+                        ("Rncmp","<Operand2>"),
                         ("N","Z","C","V"),
-                        ("Rd:=Rn+Operand2")
-                       ),
-                     #  #(("ADC","ADCS"),
-                     #  (("ADCS",),
-                     #   ("Rd","Rn","<Operand2>"),
-                     #   ("N","Z","C","V"),
-                     #   ("Rd:=Rn+Operand2+Carry")
-                     #  )#,
-                     #  (("ADD",),
-                     #   ("Rd","Rn","#<imm12>"),
-                     #   (),
-                     #   ("Rd:=Rn+imm12")
-                     #  )
-                    ]
+                        ("update flags")
+                       )
+                     ]
                    })
+#
 #operations.update({"Subtract" : 
 #                     [
 #                       (("SUB","SUBS"),
@@ -413,7 +423,13 @@ for i in range(0,tests_per_instruction):
                      #Rn_val = random.randint(0,2**8-1)
                      append_init_reg_strings(init_strings,Rn,Rn_val)
                      inst_string += ", R%d"%(Rn)
-                     # only MSB because of bug in write reg 32 bits...
+                     changed_regs.append(Rn)
+                  elif operand in ["Rncmp"]:
+                     Rn = random.randint(0,12)
+                     Rn_val = random.randint(0,2**32-1)
+                     #Rn_val = random.randint(0,2**8-1)
+                     append_init_reg_strings(init_strings,Rn,Rn_val)
+                     inst_string += " R%d"%(Rn)
                      changed_regs.append(Rn)
                   elif operand in ["Rn, shift"]:
                      Rn = random.randint(0,12)
@@ -423,7 +439,6 @@ for i in range(0,tests_per_instruction):
                      inst_string += ", R%d"%(Rn)
                      inst_string += random.choice([", lsl",", lsr",", asr",", ror"]);
                      inst_string += " #%d"%(random.randint(1,31))
-                     # only MSB because of bug in write reg 32 bits...
                      changed_regs.append(Rn)
                   elif operand in ["Rror"]:
                      Rn = random.randint(0,12)
