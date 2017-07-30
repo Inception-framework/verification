@@ -42,6 +42,14 @@ def generate_cf_tests(seed):
     reglist_allowed.remove("SP")
     reglist_allowed.remove("LR")
     Rindex = random.choice(reglist_allowed)
+    reglist_allowed.remove(Rindex)
+    Rindex2 = random.choice(reglist_allowed)
+    reglist_allowed.remove(Rindex2)
+    Rbb1 = random.choice(reglist_allowed)
+    reglist_allowed.remove(Rbb1)
+    Rbb2 = random.choice(reglist_allowed)
+    reglist_allowed.remove(Rbb2)
+    Rbb3 = random.choice(reglist_allowed)
     cond_loop_p = random.choice(conditions_loop_p)
     cond_loop_n = random.choice(conditions_loop_n)
 
@@ -74,6 +82,81 @@ def generate_cf_tests(seed):
                              list(device.regs.keys()).index("CPSR") 
                            ])
 
+    ## nested loops
+    combs = list(itertools.product(
+                     ["mov %s, #0"%(Rindex2)],
+                     ["outer_loop:"],
+                     #
+                     ["mov %s, #100"%(Rindex)],
+                     ["loop:"],
+                     ["add %s,%s,#-1"%(Rindex,Rindex)],
+                     ["cmp %s,#0"%(Rindex)],
+                     ["b%s loop"%(cond_loop_n)],
+                     #
+                     ["add %s,%s,#1"%(Rindex2,Rindex2)],
+                     ["cmp %s,#0x100"%(Rindex2)],
+                     ["b%s outer_loop"%(cond_loop_p)]
+                ))
+    programs += combs
+    for i in range(0,len(combs)):
+        changed_regs.append([list(device.regs.keys()).index(Rindex),
+                             list(device.regs.keys()).index("CPSR") 
+                           ])
+
+    ## cfg
+   # n = random.randint(0,4)
+   # programs.append(["mov r1,#%d"%(n),
+   #                  "cmp r1,#0",
+   #                  "bne compute",
+   #                  "mov r0,#0",
+   #                  "b return",
+   #                  "compute:",
+   #                  "mov r2,#%d"%(n),
+   #                  "mov r3,#%d"%(n+1),
+   #                  "add r0,r2,r3",
+   #                  "return:"])
+   # changed_regs.append([list(device.regs.keys()).index("R0"),
+   #                      list(device.regs.keys()).index("R1"), 
+   #                      list(device.regs.keys()).index("R2"),
+   #                      list(device.regs.keys()).index("R3"), 
+   #                      list(device.regs.keys()).index("CPSR") 
+   #                    ])
+
+   # cmp1 = Rindex
+   # cmp2 = Rindex2
+   # cmp1_val = random.randint(-5,5)
+   # cmp2_val = random.randint(-5,5)
+   # cond = random.choice(conditions)
+   # combs = list(itertools.product(
+   #                  ["start:"],
+   #                  ["mov %s,#%d"%(cmp1,cmp1_val)],
+   #                  ["mov %s,#%d"%(cmp2,cmp2_val)],
+   #                  ["cmp %s,%s"%(cmp1,cmp2)],
+   #                  ["b%s %s"%(cond,random.choice(["bb1","bb2","bb3"]))],
+   #                  ["bb1:"],
+   #                  ["mov %s,#1"%(Rbb1)],
+   #                  ["b end"],
+   #                  ["bb2:"],
+   #                  ["mov %s,#2"%(Rbb2)],
+   #                  ["bb3:"],
+   #                  ["mov %s,#3"%(Rbb3)],
+   #                  ["cmp %s,%s"%(cmp1,cmp2)],
+   #                  ["b%s %s"%(cond,random.choice(["bb1","end"]))],
+   #                  ["end:"],
+   #             ))
+   # programs += combs
+   # for i in range(0,len(combs)):
+   #     changed_regs.append([list(device.regs.keys()).index(cmp1),
+   #                          list(device.regs.keys()).index(cmp2), 
+   #                          list(device.regs.keys()).index(Rbb1),
+   #                          list(device.regs.keys()).index(Rbb2), 
+   #                          list(device.regs.keys()).index(Rbb3), 
+   #                          list(device.regs.keys()).index("CPSR") 
+   #                        ])
+
+
+
+  
 
     return changed_regs,programs
     
