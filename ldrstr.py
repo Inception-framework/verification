@@ -41,10 +41,12 @@ def generate_ldrstr(seed):
     reglist_allowed.remove("CPSR")
     reglist_allowed.remove("PC")
     reglist_allowed.remove("SP")
+    reglist_allowed.remove("LR") #don't corrupt link regitster
     Rd = random.choice(reglist_allowed)
     reglist_allowed = list(device.regs.keys())
     reglist_allowed.remove("CPSR")
     reglist_allowed.remove("PC")
+    reglist_allowed.remove("LR") #don't corrupt link regitster
     Rn = random.choice(reglist_allowed)
     while(Rd == Rn):
         Rn = random.choice(reglist_allowed)
@@ -52,6 +54,7 @@ def generate_ldrstr(seed):
     reglist_allowed.remove("CPSR")
     reglist_allowed.remove("PC")
     reglist_allowed.remove("SP")
+    reglist_allowed.remove("LR") #don't corrupt link regitster
     Rm = random.choice(reglist_allowed)
     #offset = random.randint(-4095,4095)
     offset = random.choice(range(-100,100,4)) #always ok
@@ -61,6 +64,7 @@ def generate_ldrstr(seed):
     reglist_allowed.remove("PC")
     reglist_allowed.remove("SP")
     reglist_allowed.remove("CPSR")
+    reglist_allowed.remove("LR") #don't corrupt link regitster
     if Rn != "PC" and Rn != "SP" and Rn != "CPSR":
         reglist_allowed.remove(Rn)
     reglist = []
@@ -70,7 +74,7 @@ def generate_ldrstr(seed):
     Rd1 = random.choice(reglist_allowed)
     Rd2 = random.choice(reglist_allowed)
  
-    init_regs = ', '.join([Rd,Rd1,Rd2,Rm])+", "+reglist[1:len(reglist)-1]
+    init_regs = ', '.join([Rd,Rd1,Rd2])+", "+reglist[1:len(reglist)-1]
     init_regs = init_regs.split(', ')
     if "PC" in init_regs:
         init_regs.remove("PC")
@@ -82,6 +86,7 @@ def generate_ldrstr(seed):
     init_regs = list(set(init_regs))
     base_reg  = list(device.regs.keys()).index(Rn)
     ldrstr_instructions = []
+    offset_reg = list(device.regs.keys()).index(Rm)
     
     #if(Rn == "PC"):
     #  wb = ""
@@ -205,7 +210,7 @@ def generate_ldrstr(seed):
    # print("")
     
     
-    return init_regs,base_reg,ldrstr_instructions
+    return init_regs,base_reg,offset_reg,ldrstr_instructions
     
 ## save number of tests
 #with open('%s/Ntests'%(folder),mode='wt') as Ntests_file:
