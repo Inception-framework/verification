@@ -88,7 +88,9 @@ fi
 printf "%s\n" "--> ok"
 
 printf "%s" "Compiling C source code to object file ...    "
-arm-none-eabi-gcc $GCC_ARGS -g -c ./$3/$1.c -o ./$3/$1.o
+echo -e "#define NOPRINT\n$(cat ./$3/$1.c)" > ./$3/$1_no_print.c
+arm-none-eabi-gcc $GCC_ARGS -g -c ./$3/$1_no_print.c -o ./$3/$1.o
+rm ./$3/$1_no_print.c
 if [ $? != 0 ]; then
 	printf "%s\n" "--> failed"
 	exit 1;
@@ -111,13 +113,13 @@ if [ $? != 0 ]; then
 fi
 printf "%s\n" "--> ok"
 
-#if [ $PRINT_GRAPHS = true ]; then
-#	PRINT_ARGS='-view-machine-dags -view-ir-dags -print-graph'
-#else
-        PRINT_ARGS=''
-##fi
+if [ $PRINT_GRAPHS = true ]; then
+	PRINT_ARGS='-view-machine-dags -view-ir-dags -print-graph'
+else
+       PRINT_ARGS=''
+fi
 
-$TARGET_PATH/$TARGET $PRINT_ARGS $FRACTURE_ARGS 2>&1 >/dev/null
+$TARGET_PATH/$TARGET $PRINT_ARGS $FRACTURE_ARGS #2>&1 >/dev/null
 if [ $? != 0 ]; then
 	printf "%s\n" "--> $1 fracture failed"
 	exit 1;
