@@ -69,14 +69,14 @@ void main(void){
   __asm volatile("add R12,R12,#0x71"); 
   __asm volatile("lsl R12,R12,#8"); 
   __asm volatile("add R12,R12,#0x96"); 
-  __asm volatile("mov R10,#0"); 
-  __asm volatile("add R10,R10,#0x00"); 
-  __asm volatile("lsl R10,R10,#8"); 
-  __asm volatile("add R10,R10,#0x00"); 
-  __asm volatile("lsl R10,R10,#8"); 
-  __asm volatile("add R10,R10,#0x00"); 
-  __asm volatile("lsl R10,R10,#8"); 
-  __asm volatile("add R10,R10,#0xdc"); 
+  __asm volatile("mov R11,#0"); 
+  __asm volatile("add R11,R11,#0x00"); 
+  __asm volatile("lsl R11,R11,#8"); 
+  __asm volatile("add R11,R11,#0x00"); 
+  __asm volatile("lsl R11,R11,#8"); 
+  __asm volatile("add R11,R11,#0x00"); 
+  __asm volatile("lsl R11,R11,#8"); 
+  __asm volatile("add R11,R11,#0xdc"); 
   __asm volatile("LDR R4, [R10]");
   #ifndef KLEE
   __asm volatile("stop: b stop");
