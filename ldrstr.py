@@ -55,6 +55,8 @@ def generate_ldrstr(seed):
     reglist_allowed.remove("PC")
     reglist_allowed.remove("SP")
     reglist_allowed.remove("LR") #don't corrupt link regitster
+    if Rn in reglist_allowed:
+        reglist_allowed.remove(Rn) #don't corrupt base reg
     Rm = random.choice(reglist_allowed)
     #offset = random.randint(-4095,4095)
     offset = random.choice(range(-100,100,4)) #always ok
@@ -82,9 +84,13 @@ def generate_ldrstr(seed):
         init_regs.remove("SP")
     if "CPSR" in init_regs:
         init_regs.remove("CPSR")
+    if Rn in init_regs:
+        init_regs.remove(Rn)
     init_regs = [list(device.regs.keys()).index(reg_name) for reg_name in init_regs]
     init_regs = list(set(init_regs))
     base_reg  = list(device.regs.keys()).index(Rn)
+    if base_reg in init_regs:
+        init_regs.remove(base_reg)
     ldrstr_instructions = []
     offset_reg = list(device.regs.keys()).index(Rm)
     
