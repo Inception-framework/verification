@@ -28,8 +28,8 @@ void bar(int g){
 }
 
 __attribute__((naked))
-int mario(void){
-  __asm volatile("mov r0, %[value]" :: [value] "r" (global) : "r0" );
+void mario(void){
+  __asm volatile("mov %[dest], %[value]" : [dest] "=w" (global2) : [value] "r" (global)  );
   //__asm volatile("mov r12,pc");
   __asm volatile("bx lr");
 }
@@ -44,7 +44,7 @@ void main(void){
   global2 = 0;
   global_struct.a = 1;
   global_struct.b = 2;
-  global2 = mario();
+  mario();
   foo(&global);
   bar(ptr);
   #ifndef NOPRINT
