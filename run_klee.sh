@@ -16,6 +16,8 @@ run_klee() {
   # Load the configuration file
   cp $DIR/../Samples/lpc1800-demos/config.json .
 
+  echo "536870912 STACK" > ST.txt
+
   # Remove old log
   rm -rf klee-* >&-
 
