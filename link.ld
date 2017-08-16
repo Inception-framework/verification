@@ -16,5 +16,5 @@ SECTIONS
  *(.bss .bss.*);
  }
 
- __cs3_stack = 0x20001000;
+ STACK = 0x20001000;
 }
