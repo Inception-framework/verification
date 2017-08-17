@@ -43,8 +43,6 @@ void main(void){
   __asm volatile("adds	R7, #28"); 
   __asm volatile("mov	sp, R7"); 
   __asm volatile("ldr.w	R7, [sp], #4"); 
-  __asm volatile("bx	lr"); 
-  __asm volatile("nop"); 
   #ifndef KLEE
   while(1);
   #else
