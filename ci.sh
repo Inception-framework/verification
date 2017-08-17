@@ -41,6 +41,7 @@ rm ci/$test_name.failed_klee
 rm ci/$test_name.failed_comparison
 rm ci/$test_name.passed
 rm ci/$test_name.cpsr_not_implemented
+rm ci/$test_name.failed_stack
 #rm ci/$test_name.verif
 rm -rf $results
 mkdir $results

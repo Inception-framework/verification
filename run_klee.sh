@@ -12,6 +12,7 @@ run_klee() {
 
   # Remove old dump file
   rm registers.dump >&-
+  rm stack.dump >&-
 
   # Load the configuration file
   cp $DIR/../Samples/lpc1800-demos/config.json .
@@ -34,6 +35,9 @@ run_klee() {
           printf "Klee encountered an error ...\n"
           exit 1;
   fi
+  if [ -f stack.dump ]; then
+  cat stack.dump | grep value | tr ':' '\n' | sed -r 's/^[[:space:]]//g' > stack_klee${arg1}.dump
+  fi
 }
 
 extract_dump_info() {
@@ -45,6 +49,10 @@ extract_dump_info() {
     print $2; \
     for(i=1; i<=4; i++) \
       {getline;}}' > reg_diff_klee$1.log
+
+  if [ -f stack_klee$1.dump ]; then
+  cat stack_klee$1.dump  >> reg_diff_klee$1.log
+  fi
 }
 
 main() {

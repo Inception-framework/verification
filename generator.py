@@ -309,6 +309,14 @@ def generate_ldrstr_code(init_strings,modify_strings,ldrstr_string1,ldrstr_strin
     # generate the test code
     with open('%s/main%d.c'%(folder,id),mode='wt') as main_file:
         main_file.write("#include <stdlib.h>\n")
+        main_file.write("void dump(void){\n")
+        main_file.write("  #ifndef NOPRINT\n")
+        main_file.write("  #ifdef KLEE\n")
+        main_file.write("  inception_dump_stack(0,2050);\n")
+        main_file.write("  #endif\n")
+        main_file.write("  #endif\n")
+        main_file.write("}\n")
+
         main_file.write("__attribute__((naked))\n")
         #main_file.write("void foo(void){\n")
         main_file.write("void main(void){\n")
@@ -369,6 +377,7 @@ def generate_ldrstr_code(init_strings,modify_strings,ldrstr_string1,ldrstr_strin
         main_file.write('  __asm volatile("stop: b stop");\n')
         main_file.write("  #else\n")
         #main_file.write('  __asm volatile("adr lr,main");\n')
+        main_file.write('  __asm volatile("bl dump");\n')
         main_file.write('  __asm volatile("bx lr");\n')
         main_file.write("  #endif\n")
         #main_file.write("}\n")
@@ -441,6 +450,10 @@ def execute_on_device_and_dump(id,changed_regs):
                                                        (final_val >> 28) & 1))
         reg_diff_file.close
 
+    with open('%s/reg_diff%d.log'%(folder,id),mode='a') as stack_file:
+        for i in range(0,2050):
+            stack_file.write("value[%d]\n%d\n"%(i,device.read(0x20000000+i*4)))
+        stack_file.close
 
 # test generation
 # TODO continue
@@ -577,7 +590,7 @@ for i in range(0,tests_per_instruction):
         #generate_ldrstr_code(["mov r12,#1"],["mov r12,#2"],"str r12,[sp,#4]!","ldr r12,[sp,#4]!",id)
         #generate_ldrstr_code(["mov r0,#1"],["mov r0,#2"],"LDMDB SP!, {R7, R6, R12, LR, R4, R7, R5, R9, R3, R8}","LDMDB SP!, {R7, R6, R12, LR, R4, R7, R5, R9, R3, R8}",id)
         #generate_ldrstr_code(init_strings,modify_strings,"ST"+ldrstr_instr,"LD"+ldrstr_instr,id)
-        generate_ldrstr_code(init_strings,"","ST"+ldrstr_instr,"LD"+ldrstr_instr,id)
+        generate_ldrstr_code(init_strings,"","ST"+ldrstr_instr,"",id)
         #generate_ldrstr_code(init_strings,modify_strings,"LDRB R12,[SP,#-36]","LDRB R12, [SP ,#-36]",id)
         # compile the code for the real device
         os_run.run_catch_error('make FOLDER=%s ID=%d'%(folder,id),cont)
