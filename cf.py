@@ -213,8 +213,6 @@ def generate_cf_tests(seed):
                      ["adds	%s, #28"%(r7)],
                      ["mov	sp, %s"%(r7)],
                      ["ldr.w	%s, [sp], #4"%(r7)],
-                     ["bx	lr"],
-                     ["nop"]
                 ))
     programs += combs
     for i in range(0,len(combs)):
