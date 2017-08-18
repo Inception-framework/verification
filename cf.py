@@ -162,16 +162,16 @@ def generate_cf_tests(seed):
     reglist_allowed.remove("LR")
     Rindex = random.choice(reglist_allowed)
     reglist_allowed.remove(Rindex)
-    r0 = "R0" #random.choice(reglist_allowed)
-    #reglist_allowed.remove(r0)
-    r2 = "R2" #random.choice(reglist_allowed)
-    #reglist_allowed.remove(r2)
-    r3 = "R3" #random.choice(reglist_allowed)
-    #reglist_allowed.remove(r3)
-    r7 = "R7" #random.choice(reglist_allowed)
-    #reglist_allowed.remove(r7)
+    r0 = random.choice(reglist_allowed)
+    reglist_allowed.remove(r0)
+    r2 = random.choice(reglist_allowed)
+    reglist_allowed.remove(r2)
+    r3 = random.choice(reglist_allowed)
+    reglist_allowed.remove(r3)
+    r7 = random.choice(reglist_allowed)
+    reglist_allowed.remove(r7)
     combs = list(itertools.product(
-                     ["mov	%s,#%d"%(r0,random.randint(0,10))],
+                     ["mov	%s,#%d"%(r0,random.randint(1,10))],
                      ["push	{%s}"%(r7)],
                      ["sub	sp, #28"],
                      ["add	%s, sp, #0"%(r7)],
@@ -218,7 +218,7 @@ def generate_cf_tests(seed):
     for i in range(0,len(combs)):
         changed_regs.append([list(device.regs.keys()).index(r0),
                              list(device.regs.keys()).index(r2), 
-                             list(device.regs.keys()).index(r2),
+                             list(device.regs.keys()).index(r3),
                              list(device.regs.keys()).index(r7), 
                              list(device.regs.keys()).index("SP"), 
                              list(device.regs.keys()).index("CPSR") 
