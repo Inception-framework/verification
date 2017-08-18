@@ -394,7 +394,7 @@ def execute_on_device_and_dump(id,changed_regs):
    
     # first get PC and SP from the elf TODO replace with grep from python
     os.system("readelf -a %s/main%d.elf \
-                    | grep STACK | awk '{print $2;}' > %s/SP"%(folder,id,folder))
+                    | grep _stack_end_ | awk '{print $2;}' > %s/SP"%(folder,id,folder))
     os.system("readelf -a %s/main%d.elf \
                     | grep code  | awk '{print $5;}' > %s/CODE"%(folder,id,folder))
     os.system("readelf -a %s/main%d.elf \
@@ -403,6 +403,7 @@ def execute_on_device_and_dump(id,changed_regs):
     with open('%s/SP'%(folder),mode='rt') as sppc_file:
         SP = int(sppc_file.readline(),16)
     sppc_file.close()
+    SP = 0x20001000 #hardcoded for debug
     with open('%s/CODE'%(folder),mode='rt') as sppc_file:
        CODE = int(sppc_file.readline(),16)
     sppc_file.close()
@@ -450,10 +451,10 @@ def execute_on_device_and_dump(id,changed_regs):
                                                        (final_val >> 28) & 1))
         reg_diff_file.close
 
-    with open('%s/reg_diff%d.log'%(folder,id),mode='a') as stack_file:
-        for i in range(0,2050):
-            stack_file.write("value[%d]\n%d\n"%(i,device.read(0x20000000+i*4)))
-        stack_file.close
+    #with open('%s/reg_diff%d.log'%(folder,id),mode='a') as stack_file:
+    #    for i in range(0,2050):
+    #        stack_file.write("value[%d]\n%d\n"%(i,device.read(0x20000000+i*4)))
+    #    stack_file.close
 
 # test generation
 # TODO continue
@@ -556,69 +557,71 @@ id = 0
 #              id += 1
 #              #input("Press any key to continue")
 #
-for i in range(0,tests_per_instruction):
-    init_regs,base_reg,offset_reg,ldrstr_instructions = ldrstr.generate_ldrstr(seed+i)
-    changed_regs = init_regs+[base_reg]+[offset_reg]
-    
-    # stack init code 
-    changed_regs += [list(device.regs.keys()).index("R0")]
-    changed_regs += [list(device.regs.keys()).index("R1")]
-    changed_regs += [list(device.regs.keys()).index("R2")]
-    changed_regs += [list(device.regs.keys()).index("CPSR")]
-    
-    init_strings = []
-    modify_strings = []
-    print (init_regs)
-    if(base_reg != list(device.regs.keys()).index("SP")):
-        init_strings.append("mov R%d,sp"%(base_reg))
-        changed_regs.append(list(device.regs.keys()).index("SP"))
-    for init_reg in init_regs:
-        Rn_val = random.randint(0,2**32-1)
-        #Rn_val = 0xffffffff #random.randint(2**8-1)
-        Rn_val2 = random.randint(0,2**32-1)
-        #Rn_val2 = 0x00fffbff #random.randint(0,2**8-1)
-        while Rn_val2 == Rn_val:
-            Rn_val2 = random.randint(0,2**32-1)
-            #Rn_val2 = 0x00fffc00 #random.randint(0,2**8-1)
-        append_init_reg_strings(init_strings,init_reg,Rn_val)
-        append_init_reg_strings(modify_strings,init_reg,Rn_val2)
-    append_init_reg_strings(init_strings,offset_reg,random.randint(0,2**8-1))
-    append_init_reg_strings(modify_strings,offset_reg,random.randint(0,2**8-1))
-    #print (init_strings)
-    for ldrstr_instr in ldrstr_instructions:
-        print(ldrstr_instr)
-        #generate_ldrstr_code(["mov r12,#1"],["mov r12,#2"],"str r12,[sp,#4]!","ldr r12,[sp,#4]!",id)
-        #generate_ldrstr_code(["mov r0,#1"],["mov r0,#2"],"LDMDB SP!, {R7, R6, R12, LR, R4, R7, R5, R9, R3, R8}","LDMDB SP!, {R7, R6, R12, LR, R4, R7, R5, R9, R3, R8}",id)
-        #generate_ldrstr_code(init_strings,modify_strings,"ST"+ldrstr_instr,"LD"+ldrstr_instr,id)
-        generate_ldrstr_code(init_strings,"","ST"+ldrstr_instr,"",id)
-        #generate_ldrstr_code(init_strings,modify_strings,"LDRB R12,[SP,#-36]","LDRB R12, [SP ,#-36]",id)
-        # compile the code for the real device
-        os_run.run_catch_error('make FOLDER=%s ID=%d'%(folder,id),cont)
-        # run on the real device and dump
-        #execute_on_device_and_dump(id,[12,13])
-        execute_on_device_and_dump(id,changed_regs)
-        device.halt()
-        device.display_all_regs()
-        #for i in range(0,2050):
-        #    device.read(0x20001000-i*4+1025*4)
-        device.read(0x20001000-36)
-        device.resume()
-        id += 1
-        #if id == 1:
-        #    break
-
-
 #for i in range(0,tests_per_instruction):
-#    cf_regs,cf_programs = cf.generate_cf_tests(seed+i)
-#    for changed_regs,cf_program in zip(cf_regs,cf_programs):
-#        generate_test_code(cf_program,"","",id)
+#    init_regs,base_reg,offset_reg,ldrstr_instructions = ldrstr.generate_ldrstr(seed+i)
+#    changed_regs = init_regs+[base_reg]+[offset_reg]
+#    
+#    # stack init code 
+#    changed_regs += [list(device.regs.keys()).index("R0")]
+#    changed_regs += [list(device.regs.keys()).index("R1")]
+#    changed_regs += [list(device.regs.keys()).index("R2")]
+#    changed_regs += [list(device.regs.keys()).index("CPSR")]
+#    
+#    init_strings = []
+#    modify_strings = []
+#    print (init_regs)
+#    if(base_reg != list(device.regs.keys()).index("SP")):
+#        init_strings.append("mov R%d,sp"%(base_reg))
+#        changed_regs.append(list(device.regs.keys()).index("SP"))
+#    for init_reg in init_regs:
+#        Rn_val = random.randint(0,2**32-1)
+#        #Rn_val = 0xffffffff #random.randint(2**8-1)
+#        Rn_val2 = random.randint(0,2**32-1)
+#        #Rn_val2 = 0x00fffbff #random.randint(0,2**8-1)
+#        while Rn_val2 == Rn_val:
+#            Rn_val2 = random.randint(0,2**32-1)
+#            #Rn_val2 = 0x00fffc00 #random.randint(0,2**8-1)
+#        append_init_reg_strings(init_strings,init_reg,Rn_val)
+#        append_init_reg_strings(modify_strings,init_reg,Rn_val2)
+#    append_init_reg_strings(init_strings,offset_reg,random.randint(0,2**8-1))
+#    append_init_reg_strings(modify_strings,offset_reg,random.randint(0,2**8-1))
+#    #print (init_strings)
+#    for ldrstr_instr in ldrstr_instructions:
+#        print(ldrstr_instr)
+#        #generate_ldrstr_code(["mov r12,#1"],["mov r12,#2"],"str r12,[sp,#4]!","ldr r12,[sp,#4]!",id)
+#        #generate_ldrstr_code(["mov r0,#1"],["mov r0,#2"],"LDMDB SP!, {R7, R6, R12, LR, R4, R7, R5, R9, R3, R8}","LDMDB SP!, {R7, R6, R12, LR, R4, R7, R5, R9, R3, R8}",id)
+#        #generate_ldrstr_code(init_strings,modify_strings,"ST"+ldrstr_instr,"LD"+ldrstr_instr,id)
+#        generate_ldrstr_code(init_strings,"","ST"+ldrstr_instr,"",id)
+#        #generate_ldrstr_code(init_strings,modify_strings,"LDRB R12,[SP,#-36]","LDRB R12, [SP ,#-36]",id)
+#        # compile the code for the real device
 #        os_run.run_catch_error('make FOLDER=%s ID=%d'%(folder,id),cont)
+#        # run on the real device and dump
+#        #execute_on_device_and_dump(id,[12,13])
 #        execute_on_device_and_dump(id,changed_regs)
 #        device.halt()
 #        device.display_all_regs()
+#        #for i in range(0,2050):
+#        #    device.read(0x20001000-i*4+1025*4)
+#        device.read(0x20001000-36)
 #        device.resume()
 #        id += 1
+#        #if id == 1:
+#        #    break
 #
+#
+for i in range(0,tests_per_instruction):
+    cf_regs,cf_programs = cf.generate_cf_tests(seed+i)
+    for changed_regs,cf_program in zip(cf_regs,cf_programs):
+        generate_test_code(cf_program,"","",id)
+        os_run.run_catch_error('make FOLDER=%s ID=%d'%(folder,id),cont)
+        execute_on_device_and_dump(id,changed_regs)
+        device.halt()
+        device.display_all_regs()
+        device.resume()
+        id += 1
+        if id==1:
+           break
+
 with open('%s/Ntests'%(folder),mode='wt') as Ntests_file:
     Ntests_file.write("%d\n"%(id))
 Ntests_file.close
