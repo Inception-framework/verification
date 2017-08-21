@@ -5,15 +5,7 @@ void main(void){
   __asm volatile("adds r0,r0,#0xab"); 
   __asm volatile("mov r0,#5"); 
   __asm volatile("lsrs r0,#1"); 
-  __asm volatile("mov R0,#0"); 
-  __asm volatile("add R0,R0,#0xc0"); 
-  __asm volatile("lsl R0,R0,#8"); 
-  __asm volatile("add R0,R0,#0x5f"); 
-  __asm volatile("lsl R0,R0,#8"); 
-  __asm volatile("add R0,R0,#0x98"); 
-  __asm volatile("lsl R0,R0,#8"); 
-  __asm volatile("add R0,R0,#0x74"); 
-  __asm volatile("MVNS R12, R0");
+  __asm volatile("MVNS R4, #0x12400000");
   #ifndef KLEE
   while(1);
   #else

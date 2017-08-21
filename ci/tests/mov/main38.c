@@ -3,17 +3,17 @@ __attribute__((naked))
 void main(void){
   __asm volatile("mov r0,#0"); 
   __asm volatile("adds r0,r0,#0xab"); 
-  __asm volatile("mov r0,#4"); 
+  __asm volatile("mov r0,#5"); 
   __asm volatile("lsrs r0,#1"); 
-  __asm volatile("mov R6,#0"); 
-  __asm volatile("add R6,R6,#0x9e"); 
-  __asm volatile("lsl R6,R6,#8"); 
-  __asm volatile("add R6,R6,#0xdf"); 
-  __asm volatile("lsl R6,R6,#8"); 
-  __asm volatile("add R6,R6,#0xa3"); 
-  __asm volatile("lsl R6,R6,#8"); 
-  __asm volatile("add R6,R6,#0xda"); 
-  __asm volatile("MOV R8, R6");
+  __asm volatile("mov R4,#0"); 
+  __asm volatile("add R4,R4,#0x51"); 
+  __asm volatile("lsl R4,R4,#8"); 
+  __asm volatile("add R4,R4,#0x26"); 
+  __asm volatile("lsl R4,R4,#8"); 
+  __asm volatile("add R4,R4,#0x9a"); 
+  __asm volatile("lsl R4,R4,#8"); 
+  __asm volatile("add R4,R4,#0xb7"); 
+  __asm volatile("MVNS R10, R4, ror #16");
   #ifndef KLEE
   while(1);
   #else

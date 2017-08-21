@@ -5,7 +5,7 @@ void main(void){
   __asm volatile("adds r0,r0,#0xab"); 
   __asm volatile("mov r0,#5"); 
   __asm volatile("lsrs r0,#1"); 
-  __asm volatile("MVN R0, #0x77");
+  __asm volatile("MVN R3, #0xfbfbfbfb");
   #ifndef KLEE
   while(1);
   #else

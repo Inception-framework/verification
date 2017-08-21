@@ -6,14 +6,14 @@ void main(void){
   __asm volatile("mov r0,#4"); 
   __asm volatile("lsrs r0,#1"); 
   __asm volatile("mov R1,#0"); 
-  __asm volatile("add R1,R1,#0x47"); 
+  __asm volatile("add R1,R1,#0x04"); 
   __asm volatile("lsl R1,R1,#8"); 
-  __asm volatile("add R1,R1,#0x89"); 
+  __asm volatile("add R1,R1,#0xb0"); 
   __asm volatile("lsl R1,R1,#8"); 
-  __asm volatile("add R1,R1,#0x47"); 
+  __asm volatile("add R1,R1,#0xd5"); 
   __asm volatile("lsl R1,R1,#8"); 
-  __asm volatile("add R1,R1,#0x08"); 
-  __asm volatile("MOVS R1, R1");
+  __asm volatile("add R1,R1,#0x7f"); 
+  __asm volatile("MOV R11, R1, asr #25");
   #ifndef KLEE
   while(1);
   #else
