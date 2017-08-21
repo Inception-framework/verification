@@ -21,6 +21,7 @@ import os_run
 import getopt
 import ldrstr
 import cf
+import constant
 
 # read command line args
 def print_usage_error():
@@ -224,31 +225,40 @@ operations = OrderedDict()
 #                       )
 #                     ]
 #                   })
-operations.update({"MOV" : 
+#operations.update({"MOV" : 
+#                     [
+#                      (("MOV","MVN"),
+#                        ("Rd","<Operand2>"),
+#                        (),
+#                        ("Rd:= (!)Operand2")
+#                      ),
+#                      (("MOVW",),
+#                        ("Rd","#<imm16>"),
+#                        (),
+#                        ("Rd:= zeroext(imm16)")
+#                      ),
+#                      (("MOVS","MVNS"),
+#                        ("Rd","<Operand2>"),
+#                        ("N","Z","C","V"),
+#                        ("Rd:= (!)Operand2")
+#                       )
+#                     ]
+#                   })
+#
+operations.update({"Logical" : 
                      [
-                      (("MOV","MVN"),
-                        ("Rd","<Operand2>"),
-                        (),
-                        ("Rd:= (!)Operand2")
-                      ),
-                      (("MOVW",),
-                        ("Rd","#<imm16>"),
-                        (),
-                        ("Rd:= zeroext(imm16)")
-                      ),
-                      (("MOVS","MVNS"),
-                        ("Rd","<Operand2>"),
-                        ("N","Z","C","V"),
-                        ("Rd:= (!)Operand2")
+                       (("TST",),
+                        ("Rd","#<const>"),
+                        ("N","Z","C"),
+                        ("")
                        )
                      ]
                    })
 
-
 #
 # possible operand2
 # TODO continue, more values are possible, imm8 should be imm8m
-operand2 = ( "#<imm8>", "Rn")#, "Rn, shift" )
+operand2 = ("#<const>", "Rn")#( "#<imm8>", "Rn")#, "Rn, shift" )
 
 ## expanding Operand2
 operations_expanded = OrderedDict()
@@ -557,6 +567,11 @@ for i in range(0,tests_per_instruction):
                   elif operand == "#<imm8>":
                      imm8_val = random.randint(0,2**8-1)
                      inst_string += ", #0x%02x"%(imm8_val)
+                  elif operand == "#<const>":
+                     const = constant.generate(seed
+                                               +random.randint(0,10)
+                                               +tests_per_instruction)                    
+                     inst_string += ", #0x%08x"%(const)
                   elif operand == "#<imm12>":
                      imm12_val = random.randint(0,2**12-1)
                      inst_string += ", #0x%03x"%(imm12_val)
