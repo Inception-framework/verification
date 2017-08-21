@@ -225,40 +225,50 @@ operations = OrderedDict()
 #                       )
 #                     ]
 #                   })
-#operations.update({"MOV" : 
-#                     [
-#                      (("MOV","MVN"),
-#                        ("Rd","<Operand2>"),
-#                        (),
-#                        ("Rd:= (!)Operand2")
-#                      ),
-#                      (("MOVW",),
-#                        ("Rd","#<imm16>"),
-#                        (),
-#                        ("Rd:= zeroext(imm16)")
-#                      ),
-#                      (("MOVS","MVNS"),
-#                        ("Rd","<Operand2>"),
-#                        ("N","Z","C","V"),
-#                        ("Rd:= (!)Operand2")
-#                       )
-#                     ]
-#                   })
-#
-operations.update({"Logical" : 
+operations.update({"MOV" : 
                      [
-                       (("TST",),
-                        ("Rd","#<const>"),
-                        ("N","Z","C"),
-                        ("")
+                      (("MOV","MVN"),
+                        ("Rd","<Operand2>"),
+                        (),
+                        ("Rd:= (!)Operand2")
+                      ),
+                      (("MOVW",),
+                        ("Rd","#<imm16>"),
+                        (),
+                        ("Rd:= zeroext(imm16)")
+                      ),
+                      (("MOVS","MVNS"),
+                        ("Rd","<Operand2>"),
+                        ("N","Z","C","V"),
+                        ("Rd:= (!)Operand2")
                        )
                      ]
                    })
 
+#operations.update({"Logical" : 
+#                     [
+#                     #  (("TST",),
+#                     #   ("Rd","#<const>"),
+#                     #   ("N","Z","C"),
+#                     #   ("")
+#                     #  ),
+#                     #  (("TST",),
+#                     #   ("Rd","Rn"),
+#                     #   ("N","Z","C"),
+#                     #   ("")
+#                     #  ),
+#                       (("TST",),
+#                        ("Rd","<Operand2>"),
+#                        ("N","Z","C"),
+#                        ("")
+#                       ),
+#                     ]
+#                   })
+#
 #
 # possible operand2
 # TODO continue, more values are possible, imm8 should be imm8m
-operand2 = ("#<const>", "Rn")#( "#<imm8>", "Rn")#, "Rn, shift" )
+operand2 = ("#<const>", "Rn","Rn, shift")#( "#<imm8>", "Rn")#, "Rn, shift" )
 
 ## expanding Operand2
 operations_expanded = OrderedDict()
@@ -534,8 +544,11 @@ for i in range(0,tests_per_instruction):
                      #Rn_val = random.randint(0,2**8-1)
                      append_init_reg_strings(init_strings,Rn,Rn_val)
                      inst_string += ", R%d"%(Rn)
-                     inst_string += random.choice([", lsl",", lsr",", asr",", ror"]);
-                     inst_string += " #%d"%(random.randint(1,31))
+                     inst_string += random.choice([", lsl #%d"%(random.randint(0,31)),
+                                                   ", lsr #%d"%(random.randint(1,32)),
+                                                   ", asr #%d"%(random.randint(1,32)),
+                                                   ", ror #%d"%(random.randint(1,31)),
+                                                   ", rrx"]);
                      changed_regs.append(Rn)
                   elif operand in ["Rror"]:
                      Rn = random.randint(0,12)
