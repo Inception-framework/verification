@@ -225,46 +225,54 @@ operations = OrderedDict()
 #                       )
 #                     ]
 #                   })
-operations.update({"MOV" : 
-                     [
-                      (("MOV","MVN"),
-                        ("Rd","<Operand2>"),
-                        (),
-                        ("Rd:= (!)Operand2")
-                      ),
-                      (("MOVW",),
-                        ("Rd","#<imm16>"),
-                        (),
-                        ("Rd:= zeroext(imm16)")
-                      ),
-                      (("MOVS","MVNS"),
-                        ("Rd","<Operand2>"),
-                        ("N","Z","C","V"),
-                        ("Rd:= (!)Operand2")
-                       )
-                     ]
-                   })
-
-#operations.update({"Logical" : 
+#operations.update({"MOV" : 
 #                     [
-#                     #  (("TST",),
-#                     #   ("Rd","#<const>"),
-#                     #   ("N","Z","C"),
-#                     #   ("")
-#                     #  ),
-#                     #  (("TST",),
-#                     #   ("Rd","Rn"),
-#                     #   ("N","Z","C"),
-#                     #   ("")
-#                     #  ),
-#                       (("TST",),
+#                      (("MOV","MVN"),
 #                        ("Rd","<Operand2>"),
-#                        ("N","Z","C"),
-#                        ("")
-#                       ),
+#                        (),
+#                        ("Rd:= (!)Operand2")
+#                      ),
+#                      (("MOVW",),
+#                        ("Rd","#<imm16>"),
+#                        (),
+#                        ("Rd:= zeroext(imm16)")
+#                      ),
+#                      (("MOVS","MVNS"),
+#                        ("Rd","<Operand2>"),
+#                        ("N","Z","C","V"),
+#                        ("Rd:= (!)Operand2")
+#                       )
 #                     ]
 #                   })
 #
+operations.update({"Logical" : 
+                     [
+                       (("TST","TEQ",),
+                        ("Rd","<Operand2>"),
+                        ("N","Z","C"),
+                        ("")
+                        ),
+                       (("ANDS",
+                         "EORS",
+                         "ORRS",
+                         "ORNS",
+                         "BICS"),
+                         ("Rd","Rn","<Operand2>"),
+                         ("N","Z","C"),
+                         ("")
+                        ),
+                        (("AND",
+                          "EOR",
+                          "ORR",
+                          "ORN",
+                          "BIC"),
+                         ("Rd","Rn","<Operand2>"),
+                         (),
+                         ("")
+                        )
+                    ]
+                   })
+
 #
 # possible operand2
 # TODO continue, more values are possible, imm8 should be imm8m
