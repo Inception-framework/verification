@@ -1,6 +1,6 @@
 __attribute__((naked))
 int fibonacci(int n){
-  __asm volatile("push	{r4, r7, r8}");
+  __asm volatile("push	{r4, r7, lr}");
   __asm volatile("sub	sp, #12");
   __asm volatile("add	r7, sp, #0");
   __asm volatile("str	r0, [r7, #4]");
