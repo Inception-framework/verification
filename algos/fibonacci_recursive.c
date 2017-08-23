@@ -25,8 +25,7 @@ int fibonacci(int n){
   __asm volatile("mov	r0, r3");
   __asm volatile("adds	r7, #12");
   __asm volatile("mov	sp, r7");
-  __asm volatile("pop	{r4, r7, r8}");
-  __asm volatile("bx lr");
+  __asm volatile("pop	{r4, r7, pc}");
 }
 
 int fibonacci_golden(int n){
