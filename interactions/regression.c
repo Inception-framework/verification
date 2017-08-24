@@ -6,6 +6,20 @@ typedef struct {
   int b;
 } my_type;
 
+typedef struct {
+  int a;
+  int* b;
+  char* c;
+} my_subtype;
+
+typedef struct {
+  int a;
+  char* b;
+  //my_subtype mst;
+  //char mario[5];
+} mixed_type;
+
+
 
 __attribute__((naked))
 int fibonacci1(int n){
@@ -72,15 +86,6 @@ char inc_char_golden(char a){
   return ++a;
 }
 
-// bug in decompiler
-//my_type inc_type(my_type* my_thing_ptr){
-//  __asm volatile("mov r0,r0");
-//  my_type tmp;
-//  tmp.a = my_thing_ptr->a;
-//  tmp.b = my_thing_ptr->b;
-//  return tmp;
-//}
-
 my_type* inc_type(my_type* my_thing_ptr){
   __asm volatile("mov r0,r0");
   my_thing_ptr->a++;
@@ -92,6 +97,35 @@ my_type* inc_type_golden(my_type* my_thing_ptr){
   my_thing_ptr->a++;
   my_thing_ptr->b++;
   return my_thing_ptr;
+}
+
+mixed_type add_type1(mixed_type* mt_ptr){
+  __asm volatile("mov r0,r0");
+  mixed_type tmp;
+  tmp.a = mt_ptr->a;
+  tmp.b = mt_ptr->b;
+  tmp.a++;
+  *tmp.b = 'b';
+  return tmp;
+}
+
+mixed_type add_type2(mixed_type mt){
+  __asm volatile("mov r0,r0");
+  mixed_type tmp;
+  tmp.a = mt.a;
+  tmp.b = mt.b;
+  tmp.a++;
+  *tmp.b = 'b';
+  return tmp;
+}
+
+mixed_type add_type_golden(mixed_type* mt_ptr){
+  mixed_type tmp;
+  tmp.a = mt_ptr->a;
+  tmp.b = mt_ptr->b;
+  tmp.a++;
+  *tmp.b = 'b';
+  return tmp;
 }
 
 
@@ -120,6 +154,27 @@ void main(void){
   my_thing.a = 0;
   my_thing.b = 1;
   my_thing_inc_golden = *inc_type_golden(&my_thing);
+
+  mixed_type mt;
+  mixed_type mt1;
+  mixed_type mt2;
+  mixed_type mt_golden;
+ 
+  mt.a = 0;
+  char c = 'a';
+  mt.b = &c;
+  mt1 = add_type1(&mt);
+
+  mt.a = 0;
+  c = 'a';
+  mt.b = &c;
+  mt2 = add_type2(mt);
+
+  mt.a = 0;
+  c = 'a';
+  mt.b = &c;
+  mt_golden = add_type_golden(&mt);
+
 
   #ifndef NOPRINT
   printf("fibonacci1(%d) = %d\n",x,y1);
@@ -168,6 +223,22 @@ void main(void){
     printf("ok!! my_inc_thing == my_inc_thing_golden\n");
   }
 
+  printf("\n");
+  
+  printf("mt1 .a *.b = %d, %c\n",mt1.a,*mt1.b);
+  printf("mt2 .a *.b = %d, %c\n",mt2.a,*mt2.b);
+  printf("mt_golden .a *.b = %d, %c\n",mt_golden.a,*mt_golden.b);
+
+  if(mt1.a != mt_golden.a || *mt.b != *mt_golden.b){
+    printf("error!! mt1 != mt1_golden\n");
+  }else{
+    printf("ok!! mt1 == mt1_golden\n");
+  } 
+  if(mt2.a != mt_golden.a || *mt2.b != *mt_golden.b){
+    printf("error!! mt2 != mt2_golden\n");
+  }else{
+    printf("ok!! mt2 == mt2_golden\n");
+  } 
  
   #endif
 }
