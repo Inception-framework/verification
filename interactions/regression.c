@@ -158,6 +158,10 @@ void sort_golden(int* a, int size){
   }
 }
 
+char trunc(int i){
+  __asm volatile("mov r0,r0");
+  return (char)i;
+}
 
 void main(void){
   int x,y1,y2,y3,y_golden;
@@ -211,6 +215,10 @@ void main(void){
   bubble_sort(array,6);
   sort_golden(array_golden,6);
 
+  int l = 0x01234567;
+  c = trunc(l);
+  char c_golden = (char)l;
+
   #ifndef NOPRINT
   printf("fibonacci1(%d) = %d\n",x,y1);
   printf("fibonacci2(%d) = %d\n",x,y2);
@@ -240,7 +248,7 @@ void main(void){
   assert(mt1.a == mt_golden.a && *mt.b == *mt_golden.b);
   assert(mt2.a == mt_golden.a && *mt2.b == *mt_golden.b);
   printf("ok\n\n");
-
+ 
   int i;
   int error = 0;
   printf("array       : ");
@@ -258,6 +266,11 @@ void main(void){
   printf("\n");
   assert(error==0);
   printf("ok\n\n");
+
+  printf("trunc(0x%08x) = 0x%02x\n",l,c);
+  assert(c == c_golden);
+  printf("ok\n\n");
+
 
   #endif
 }
