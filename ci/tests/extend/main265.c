@@ -13,7 +13,7 @@ void main(void){
   __asm volatile("add R5,R5,#0xe5"); 
   __asm volatile("lsl R5,R5,#8"); 
   __asm volatile("add R5,R5,#0x96"); 
-  __asm volatile("UXTB R9, R5, ror #8");
+  __asm volatile("UXTH R9, R5");
   #ifndef KLEE
   while(1);
   #else

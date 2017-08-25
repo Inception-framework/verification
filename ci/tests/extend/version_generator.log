@@ -2,9 +2,9 @@ Save current version info in /home/giovanni/phd/Inception/Inception-compiler-ver
 Inception
 * master
 8f60452147b8827b1f1b1797be82c2993088cc8a
-+a7b40afb2e60334150cd86c7d3908203a4882f6f Analyzer (heads/SymbolsTable)
-+ecffce34e2687c31fd344a6f0a7810873c8f58d6 Compiler (heads/more_types)
-+63f91b09a2f0b9c7d3ff38f6a2d72d372c662eea Inception-compiler-verif (heads/master)
++35e75ceee809f37a6d7176ecf7b6e48f53bda253 Analyzer (heads/master)
++70335bd4310c5b0a20cdd1e1c036194f78afb2eb Compiler (heads/master)
++40a8e6b671915912086469a8c725ce3e79fc47c0 Inception-compiler-verif (heads/master)
  d4fc79bb42cb2bcbb51b8069afdec02c33a48b22 RTDebugger (heads/master)
 +5c84a10dd69815a9eab653a699203f9bdba0fdfc RTDebugger-driver (realease_01-77-g5c84a10)
 +8f08ed5f20a2fdc4dfa2fefece2667d2e8df1c52 Samples (heads/master)
