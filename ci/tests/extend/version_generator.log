@@ -1,0 +1,11 @@
+Save current version info in /home/giovanni/phd/Inception/Inception-compiler-verif/ci/tests/extend/version_generator.log
+Inception
+* master
+8f60452147b8827b1f1b1797be82c2993088cc8a
++a7b40afb2e60334150cd86c7d3908203a4882f6f Analyzer (heads/SymbolsTable)
++ecffce34e2687c31fd344a6f0a7810873c8f58d6 Compiler (heads/more_types)
++63f91b09a2f0b9c7d3ff38f6a2d72d372c662eea Inception-compiler-verif (heads/master)
+ d4fc79bb42cb2bcbb51b8069afdec02c33a48b22 RTDebugger (heads/master)
++5c84a10dd69815a9eab653a699203f9bdba0fdfc RTDebugger-driver (realease_01-77-g5c84a10)
++8f08ed5f20a2fdc4dfa2fefece2667d2e8df1c52 Samples (heads/master)
+ daf6f5c94d48193b15c0eb2feed56b70717cb4a1 Stubs (heads/master)
