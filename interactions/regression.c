@@ -1,3 +1,5 @@
+#include<assert.h>
+
 static int global;
 int y4;
 
@@ -215,65 +217,29 @@ void main(void){
   printf("fibonacci3(%d) = %d\n",x,y3);
   printf("fibonacci4(%d) = %d\n",x,y4);
   printf("fibonacci_golden(%d) = %d\n",x,y_golden);
-  if(y1 != y_golden){
-    printf("error!! y1 != y_golden\n");
-  }else{
-    printf("ok!! y1 == y_golden\n");
-  }
-  if(y2 != y_golden){
-    printf("error!! y2 != y_golden\n");
-  }else{
-    printf("ok!! y2 == y_golden\n");
-  }
-  if(y3 != y_golden){
-    printf("error!! y3 != y_golden\n");
-  }else{
-    printf("ok!! y3 == y_golden\n");
-  }
-  if(y4 != y_golden){
-    printf("error!! y4 != y_golden\n");
-  }else{
-    printf("ok!! y4 == y_golden\n");
-  }
-
-  printf("\n");
-
+  assert(y1 == y_golden);
+  assert(y2 == y_golden);
+  assert(y3 == y_golden);
+  assert(y4 == y_golden);
+  printf("ok\n\n");
+ 
   printf("inc_char(%c) = %c\n",a,b);
   printf("inc_char_golden(%c) = %c\n",a,b_golden);
-  if(b != b_golden){
-    printf("error!! b != b_golden\n");
-  }else{
-    printf("ok!! b == b_golden\n");
-  }
-
-  printf("\n");
+  assert(b == b_golden);
+  printf("ok\n\n");
   
   printf("my_thing_inc .a .b = %d , %d\n",my_thing_inc.a,my_thing_inc.b);
   printf("my_thing_inc_golden .a,.b = %d,%d\n",my_thing_inc_golden.a,my_thing_inc_golden.b);
-  if(my_thing_inc.a != my_thing_inc_golden.a || my_thing_inc.b != my_thing_inc_golden.b ){
-    printf("error!! my_inc_thing != my_inc_thing_golden\n");
-  }else{
-    printf("ok!! my_inc_thing == my_inc_thing_golden\n");
-  }
-
-  printf("\n");
+  assert(my_thing_inc.a == my_thing_inc_golden.a && my_thing_inc.b == my_thing_inc_golden.b );
+  printf("ok\n\n");
   
   printf("mt1 .a *.b = %d, %c\n",mt1.a,*mt1.b);
   printf("mt2 .a *.b = %d, %c\n",mt2.a,*mt2.b);
   printf("mt_golden .a *.b = %d, %c\n",mt_golden.a,*mt_golden.b);
 
-  if(mt1.a != mt_golden.a || *mt.b != *mt_golden.b){
-    printf("error!! mt1 != mt1_golden\n");
-  }else{
-    printf("ok!! mt1 == mt1_golden\n");
-  } 
-  if(mt2.a != mt_golden.a || *mt2.b != *mt_golden.b){
-    printf("error!! mt2 != mt2_golden\n");
-  }else{
-    printf("ok!! mt2 == mt2_golden\n");
-  } 
-  
-  printf("\n");
+  assert(mt1.a == mt_golden.a && *mt.b == *mt_golden.b);
+  assert(mt2.a == mt_golden.a && *mt2.b == *mt_golden.b);
+  printf("ok\n\n");
 
   int i;
   int error = 0;
@@ -290,11 +256,8 @@ void main(void){
     printf("%d ",array_golden[i]);
   }
   printf("\n");
- 
-  if(error){
-    printf("error!! array != array_golden\n");
-  }else{
-    printf("ok!! array == array_golden\n");
-  } 
+  assert(error==0);
+  printf("ok\n\n");
+
   #endif
 }
