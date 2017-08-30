@@ -72,7 +72,7 @@ printf "%s\n" "--> ok"
 #printf "%s\n" "--> ok"
 #
 printf "%s" "Compiling C Source to LLVM IR ...            "
-$CLANG $CLANG_ARGS -emit-llvm -I/usr/arm-linux-gnueabihf/include/ -I/usr/include/newlib/ -c -g ./$3/$1.c -o ./$3/$1.bc
+$CLANG $CLANG_ARGS -emit-llvm -I/usr/arm-linux-gnueabihf/include/ -I/usr/include/newlib/ -I../Analyzer/include -c -g ./$3/$1.c -o ./$3/$1.bc
 if [ $? != 0 ]; then
 	printf "%s\n" "--> failed"
 	exit 1;
@@ -80,7 +80,7 @@ fi
 printf "%s\n" "--> ok"
 
 printf "%s" "Compiling source to IR human readable ...    "
-$CLANG $CLANG_ARGS -emit-llvm -S -I/usr/arm-linux-gnueabihf/include/ -I/usr/include/newlib/ -c -g ./$3/$1.c -o ./$3/$1.ll
+$CLANG $CLANG_ARGS -emit-llvm -S -I/usr/arm-linux-gnueabihf/include/ -I/usr/include/newlib/ -I../Analyzer/include -c -g ./$3/$1.c -o ./$3/$1.ll
 if [ $? != 0 ]; then
 	printf "%s\n" "--> failed"
 	exit 1;
