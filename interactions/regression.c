@@ -164,13 +164,16 @@ char trunc(int i){
 }
 
 void main(void){
-  int x,y1,y2,y3,y_golden;
+  int x,y1,y2,y3,y5,y_golden;
   x = 6;
   y1 = fibonacci1(x);
   y2 = fibonacci2(x);
   y3 = fibonacci3(x);
   global = x;
   fibonacci4();
+  int (*fptr)(int);
+  fptr = &fibonacci1;
+  y5 = fptr(x); // tests that fptr from c is still working
   y_golden = fibonacci_golden(x);
 
   int a = 'a';
@@ -224,11 +227,13 @@ void main(void){
   printf("fibonacci2(%d) = %d\n",x,y2);
   printf("fibonacci3(%d) = %d\n",x,y3);
   printf("fibonacci4(%d) = %d\n",x,y4);
+  printf("fibonacci5(%d) = %d\n",x,y5);
   printf("fibonacci_golden(%d) = %d\n",x,y_golden);
   assert(y1 == y_golden);
   assert(y2 == y_golden);
   assert(y3 == y_golden);
   assert(y4 == y_golden);
+  assert(y5 == y_golden);
   printf("ok\n\n");
  
   printf("inc_char(%c) = %c\n",a,b);
