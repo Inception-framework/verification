@@ -500,175 +500,175 @@ def execute_on_device_and_dump(id,changed_regs):
                                                        (final_val >> 28) & 1))
         reg_diff_file.close
 
-    #with open('%s/reg_diff%d.log'%(folder,id),mode='a') as stack_file:
-    #    for i in range(0,2050):
-    #        stack_file.write("value[%d]\n%d\n"%(i,device.read(0x20000000+i*4)))
-    #    stack_file.close
+    with open('%s/reg_diff%d.log'%(folder,id),mode='a') as stack_file:
+        for i in range(0,2050):
+            stack_file.write("value[%d]\n%d\n"%(i,device.read(0x20000000+i*4)))
+        stack_file.close
 
 # test generation
 # TODO continue
 id = 0
-for i in range(0,tests_per_instruction):
-    for operation,suboperations in operations_expanded.items():
-      #print (operation)
-      for instructions,operands,updates,actions in suboperations:
-          #print (instructions)
-          for instruction in instructions:
-              changed_regs = []
-              if(updates != ()):
-                  changed_regs.append(list(device.regs.keys()).index('CPSR'))
-              init_strings = []
-              # implicit operand
-              #if actions.find("Carry") > 0:
-              #    # carry_in is a source operand
-              #    carry_in = random.randint(0,1)
-              append_init_flags(init_strings,changed_regs)
-              inst_string = instruction
-              return_string = ""
-              for operand in operands:
-                  #print(operand)
-                  if operand == "Rd":
-                     Rd = random.randint(0,12)
-                     inst_string += " R%d"%(Rd)
-                     changed_regs.append(Rd)
-                     #return_string += "mov r0,r%d"%(Rd)
-                  elif operand in ["Rn","Rm"]:
-                     Rn = random.randint(0,12)
-                     Rn_val = random.randint(0,2**32-1)
-                     #Rn_val = random.randint(0,2**8-1)
-                     append_init_reg_strings(init_strings,Rn,Rn_val)
-                     inst_string += ", R%d"%(Rn)
-                     changed_regs.append(Rn)
-                  elif operand in ["Rncmp"]:
-                     Rn = random.randint(0,12)
-                     Rn_val = random.randint(0,2**32-1)
-                     #Rn_val = random.randint(0,2**8-1)
-                     append_init_reg_strings(init_strings,Rn,Rn_val)
-                     inst_string += " R%d"%(Rn)
-                     changed_regs.append(Rn)
-                  elif operand in ["Rn, shift"]:
-                     Rn = random.randint(0,12)
-                     Rn_val = random.randint(0,2**32-1)
-                     #Rn_val = random.randint(0,2**8-1)
-                     append_init_reg_strings(init_strings,Rn,Rn_val)
-                     inst_string += ", R%d"%(Rn)
-                     inst_string += random.choice([", lsl #%d"%(random.randint(0,31)),
-                                                   ", lsr #%d"%(random.randint(1,32)),
-                                                   ", asr #%d"%(random.randint(1,32)),
-                                                   ", ror #%d"%(random.randint(1,31)),
-                                                   ", rrx"]);
-                     changed_regs.append(Rn)
-                  elif operand in ["Rror"]:
-                     Rn = random.randint(0,12)
-                     Rn_val = random.randint(1,31)
-                     append_init_reg_strings(init_strings,Rn,Rn_val)
-                     inst_string += ", R%d"%(Rn)
-                     changed_regs.append(Rn)
-                  elif operand in ["Rssr"]:
-                     Rn = random.randint(0,12)
-                     Rn_val = random.randint(1,32)
-                     append_init_reg_strings(init_strings,Rn,Rn_val)
-                     inst_string += ", R%d"%(Rn)
-                     changed_regs.append(Rn)
-                  elif operand in ["Rslsl"]:
-                     Rn = random.randint(0,12)
-                     Rn_val = random.randint(0,31)
-                     append_init_reg_strings(init_strings,Rn,Rn_val)
-                     inst_string += ", R%d"%(Rn)
-                     changed_regs.append(Rn)
-                  elif operand == "ror":
-                     sr = random.randint(1,31)
-                     inst_string += ", %d"%(sr)
-                  elif operand == "sr":
-                     sr = random.randint(1,32)
-                     inst_string += ", %d"%(sr)
-                  elif operand == "lsl":
-                     lsl = random.randint(0,31)
-                     inst_string += ", %d"%(lsl)
-                  elif operand == "#<imm8>":
-                     imm8_val = random.randint(0,2**8-1)
-                     inst_string += ", #0x%02x"%(imm8_val)
-                  elif operand == "#<const>":
-                     const = constant.generate(seed
-                                               +random.randint(0,10)
-                                               +tests_per_instruction)                    
-                     inst_string += ", #0x%08x"%(const)
-                  elif operand == "#<imm12>":
-                     imm12_val = random.randint(0,2**12-1)
-                     inst_string += ", #0x%03x"%(imm12_val)
-                  elif operand == "#<imm16>":
-                     imm16_val = random.randint(0,2**16-1)
-                     inst_string += ", #0x%04x"%(imm16_val)
-
-              # generate c code
-              generate_test_code(init_strings,inst_string,return_string,id)
-              #generate_test_code("",inst_string,"",id)
-              
-              # compile the code for the real device
-              os_run.run_catch_error('make FOLDER=%s ID=%d'%(folder,id),cont)
-    
-              # execute on the real hw
-              if(no_device==False):
-                  execute_on_device_and_dump(id,changed_regs)
-    
-              if(no_device == False):
-                  os_run.run_catch_error('cat %s/reg_diff%d.log'%(folder,id),cont)
-              
-              id += 1
-              #input("Press any key to continue")
-
 #for i in range(0,tests_per_instruction):
-#    init_regs,base_reg,offset_reg,ldrstr_instructions = ldrstr.generate_ldrstr(seed+i)
-#    changed_regs = init_regs+[base_reg]+[offset_reg]
-#    
-#    # stack init code 
-#    changed_regs += [list(device.regs.keys()).index("R0")]
-#    changed_regs += [list(device.regs.keys()).index("R1")]
-#    changed_regs += [list(device.regs.keys()).index("R2")]
-#    changed_regs += [list(device.regs.keys()).index("CPSR")]
-#    
-#    init_strings = []
-#    modify_strings = []
-#    print (init_regs)
-#    if(base_reg != list(device.regs.keys()).index("SP")):
-#        init_strings.append("mov R%d,sp"%(base_reg))
-#        changed_regs.append(list(device.regs.keys()).index("SP"))
-#    for init_reg in init_regs:
-#        Rn_val = random.randint(0,2**32-1)
-#        #Rn_val = 0xffffffff #random.randint(2**8-1)
-#        Rn_val2 = random.randint(0,2**32-1)
-#        #Rn_val2 = 0x00fffbff #random.randint(0,2**8-1)
-#        while Rn_val2 == Rn_val:
-#            Rn_val2 = random.randint(0,2**32-1)
-#            #Rn_val2 = 0x00fffc00 #random.randint(0,2**8-1)
-#        append_init_reg_strings(init_strings,init_reg,Rn_val)
-#        append_init_reg_strings(modify_strings,init_reg,Rn_val2)
-#    append_init_reg_strings(init_strings,offset_reg,random.randint(0,2**8-1))
-#    append_init_reg_strings(modify_strings,offset_reg,random.randint(0,2**8-1))
-#    #print (init_strings)
-#    for ldrstr_instr in ldrstr_instructions:
-#        print(ldrstr_instr)
-#        #generate_ldrstr_code(["mov r12,#1"],["mov r12,#2"],"str r12,[sp,#4]!","ldr r12,[sp,#4]!",id)
-#        #generate_ldrstr_code(["mov r0,#1"],["mov r0,#2"],"LDMDB SP!, {R7, R6, R12, LR, R4, R7, R5, R9, R3, R8}","LDMDB SP!, {R7, R6, R12, LR, R4, R7, R5, R9, R3, R8}",id)
-#        #generate_ldrstr_code(init_strings,modify_strings,"ST"+ldrstr_instr,"LD"+ldrstr_instr,id)
-#        generate_ldrstr_code(init_strings,"","ST"+ldrstr_instr,"",id)
-#        #generate_ldrstr_code(init_strings,modify_strings,"LDRB R12,[SP,#-36]","LDRB R12, [SP ,#-36]",id)
-#        # compile the code for the real device
-#        os_run.run_catch_error('make FOLDER=%s ID=%d'%(folder,id),cont)
-#        # run on the real device and dump
-#        #execute_on_device_and_dump(id,[12,13])
-#        execute_on_device_and_dump(id,changed_regs)
-#        device.halt()
-#        device.display_all_regs()
-#        #for i in range(0,2050):
-#        #    device.read(0x20001000-i*4+1025*4)
-#        device.read(0x20001000-36)
-#        device.resume()
-#        id += 1
-#        #if id == 1:
-#        #    break
+#    for operation,suboperations in operations_expanded.items():
+#      #print (operation)
+#      for instructions,operands,updates,actions in suboperations:
+#          #print (instructions)
+#          for instruction in instructions:
+#              changed_regs = []
+#              if(updates != ()):
+#                  changed_regs.append(list(device.regs.keys()).index('CPSR'))
+#              init_strings = []
+#              # implicit operand
+#              #if actions.find("Carry") > 0:
+#              #    # carry_in is a source operand
+#              #    carry_in = random.randint(0,1)
+#              append_init_flags(init_strings,changed_regs)
+#              inst_string = instruction
+#              return_string = ""
+#              for operand in operands:
+#                  #print(operand)
+#                  if operand == "Rd":
+#                     Rd = random.randint(0,12)
+#                     inst_string += " R%d"%(Rd)
+#                     changed_regs.append(Rd)
+#                     #return_string += "mov r0,r%d"%(Rd)
+#                  elif operand in ["Rn","Rm"]:
+#                     Rn = random.randint(0,12)
+#                     Rn_val = random.randint(0,2**32-1)
+#                     #Rn_val = random.randint(0,2**8-1)
+#                     append_init_reg_strings(init_strings,Rn,Rn_val)
+#                     inst_string += ", R%d"%(Rn)
+#                     changed_regs.append(Rn)
+#                  elif operand in ["Rncmp"]:
+#                     Rn = random.randint(0,12)
+#                     Rn_val = random.randint(0,2**32-1)
+#                     #Rn_val = random.randint(0,2**8-1)
+#                     append_init_reg_strings(init_strings,Rn,Rn_val)
+#                     inst_string += " R%d"%(Rn)
+#                     changed_regs.append(Rn)
+#                  elif operand in ["Rn, shift"]:
+#                     Rn = random.randint(0,12)
+#                     Rn_val = random.randint(0,2**32-1)
+#                     #Rn_val = random.randint(0,2**8-1)
+#                     append_init_reg_strings(init_strings,Rn,Rn_val)
+#                     inst_string += ", R%d"%(Rn)
+#                     inst_string += random.choice([", lsl #%d"%(random.randint(0,31)),
+#                                                   ", lsr #%d"%(random.randint(1,32)),
+#                                                   ", asr #%d"%(random.randint(1,32)),
+#                                                   ", ror #%d"%(random.randint(1,31)),
+#                                                   ", rrx"]);
+#                     changed_regs.append(Rn)
+#                  elif operand in ["Rror"]:
+#                     Rn = random.randint(0,12)
+#                     Rn_val = random.randint(1,31)
+#                     append_init_reg_strings(init_strings,Rn,Rn_val)
+#                     inst_string += ", R%d"%(Rn)
+#                     changed_regs.append(Rn)
+#                  elif operand in ["Rssr"]:
+#                     Rn = random.randint(0,12)
+#                     Rn_val = random.randint(1,32)
+#                     append_init_reg_strings(init_strings,Rn,Rn_val)
+#                     inst_string += ", R%d"%(Rn)
+#                     changed_regs.append(Rn)
+#                  elif operand in ["Rslsl"]:
+#                     Rn = random.randint(0,12)
+#                     Rn_val = random.randint(0,31)
+#                     append_init_reg_strings(init_strings,Rn,Rn_val)
+#                     inst_string += ", R%d"%(Rn)
+#                     changed_regs.append(Rn)
+#                  elif operand == "ror":
+#                     sr = random.randint(1,31)
+#                     inst_string += ", %d"%(sr)
+#                  elif operand == "sr":
+#                     sr = random.randint(1,32)
+#                     inst_string += ", %d"%(sr)
+#                  elif operand == "lsl":
+#                     lsl = random.randint(0,31)
+#                     inst_string += ", %d"%(lsl)
+#                  elif operand == "#<imm8>":
+#                     imm8_val = random.randint(0,2**8-1)
+#                     inst_string += ", #0x%02x"%(imm8_val)
+#                  elif operand == "#<const>":
+#                     const = constant.generate(seed
+#                                               +random.randint(0,10)
+#                                               +tests_per_instruction)                    
+#                     inst_string += ", #0x%08x"%(const)
+#                  elif operand == "#<imm12>":
+#                     imm12_val = random.randint(0,2**12-1)
+#                     inst_string += ", #0x%03x"%(imm12_val)
+#                  elif operand == "#<imm16>":
+#                     imm16_val = random.randint(0,2**16-1)
+#                     inst_string += ", #0x%04x"%(imm16_val)
 #
+#              # generate c code
+#              generate_test_code(init_strings,inst_string,return_string,id)
+#              #generate_test_code("",inst_string,"",id)
+#              
+#              # compile the code for the real device
+#              os_run.run_catch_error('make FOLDER=%s ID=%d'%(folder,id),cont)
+#    
+#              # execute on the real hw
+#              if(no_device==False):
+#                  execute_on_device_and_dump(id,changed_regs)
+#    
+#              if(no_device == False):
+#                  os_run.run_catch_error('cat %s/reg_diff%d.log'%(folder,id),cont)
+#              
+#              id += 1
+#              #input("Press any key to continue")
 #
+for i in range(0,tests_per_instruction):
+    init_regs,base_reg,offset_reg,ldrstr_instructions = ldrstr.generate_ldrstr(seed+i)
+    changed_regs = init_regs+[base_reg]+[offset_reg]
+    
+    # stack init code 
+    changed_regs += [list(device.regs.keys()).index("R0")]
+    changed_regs += [list(device.regs.keys()).index("R1")]
+    changed_regs += [list(device.regs.keys()).index("R2")]
+    changed_regs += [list(device.regs.keys()).index("CPSR")]
+    
+    init_strings = []
+    modify_strings = []
+    print (init_regs)
+    if(base_reg != list(device.regs.keys()).index("SP")):
+        init_strings.append("mov R%d,sp"%(base_reg))
+        changed_regs.append(list(device.regs.keys()).index("SP"))
+    for init_reg in init_regs:
+        Rn_val = random.randint(0,2**32-1)
+        #Rn_val = 0xffffffff #random.randint(2**8-1)
+        Rn_val2 = random.randint(0,2**32-1)
+        #Rn_val2 = 0x00fffbff #random.randint(0,2**8-1)
+        while Rn_val2 == Rn_val:
+            Rn_val2 = random.randint(0,2**32-1)
+            #Rn_val2 = 0x00fffc00 #random.randint(0,2**8-1)
+        append_init_reg_strings(init_strings,init_reg,Rn_val)
+        append_init_reg_strings(modify_strings,init_reg,Rn_val2)
+    append_init_reg_strings(init_strings,offset_reg,random.randint(0,2**8-1))
+    append_init_reg_strings(modify_strings,offset_reg,random.randint(0,2**8-1))
+    #print (init_strings)
+    for ldrstr_instr in ldrstr_instructions:
+        print(ldrstr_instr)
+        #generate_ldrstr_code(["mov r12,#1"],["mov r12,#2"],"str r12,[sp,#4]!","ldr r12,[sp,#4]!",id)
+        #generate_ldrstr_code(["mov r0,#1"],["mov r0,#2"],"LDMDB SP!, {R7, R6, R12, LR, R4, R7, R5, R9, R3, R8}","LDMDB SP!, {R7, R6, R12, LR, R4, R7, R5, R9, R3, R8}",id)
+        #generate_ldrstr_code(init_strings,modify_strings,"ST"+ldrstr_instr,"LD"+ldrstr_instr,id)
+        generate_ldrstr_code(init_strings,"","ST"+ldrstr_instr,"",id)
+        #generate_ldrstr_code(init_strings,modify_strings,"LDRB R12,[SP,#-36]","LDRB R12, [SP ,#-36]",id)
+        # compile the code for the real device
+        os_run.run_catch_error('make FOLDER=%s ID=%d'%(folder,id),cont)
+        # run on the real device and dump
+        #execute_on_device_and_dump(id,[12,13])
+        execute_on_device_and_dump(id,changed_regs)
+        device.halt()
+        device.display_all_regs()
+        #for i in range(0,2050):
+        #    device.read(0x20001000-i*4+1025*4)
+        device.read(0x20001000-36)
+        device.resume()
+        id += 1
+        #if id == 1:
+        #    break
+
+
 #for i in range(0,tests_per_instruction):
 #    cf_regs,cf_programs = cf.generate_cf_tests(seed+i)
 #    for changed_regs,cf_program in zip(cf_regs,cf_programs):
