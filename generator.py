@@ -443,16 +443,22 @@ def execute_on_device_and_dump(id,changed_regs):
    
     # first get PC and SP from the elf TODO replace with grep from python
     os.system("readelf -a %s/main%d.elf \
-                    | grep _stack_end_ | awk '{print $2;}' > %s/SP"%(folder,id,folder))
+                    | grep _stack_start_ | awk '{print $2;}' > %s/stack_start"%(folder,id,folder))
+    os.system("readelf -a %s/main%d.elf \
+                    | grep _stack_end_ | awk '{print $2;}' > %s/stack_end"%(folder,id,folder))
     os.system("readelf -a %s/main%d.elf \
                     | grep code  | awk '{print $5;}' > %s/CODE"%(folder,id,folder))
     os.system("readelf -a %s/main%d.elf \
                     | grep -w main  | awk '{print $2;}' > %s/PC"%(folder,id,folder))
     
-    with open('%s/SP'%(folder),mode='rt') as sppc_file:
-        SP = int(sppc_file.readline(),16)
+    with open('%s/stack_start'%(folder),mode='rt') as sppc_file:
+        stack_start = int(sppc_file.readline(),16)
     sppc_file.close()
-    SP = 0x20001000 #hardcoded for debug
+    with open('%s/stack_end'%(folder),mode='rt') as sppc_file:
+        stack_end = int(sppc_file.readline(),16)
+    sppc_file.close()
+    SP = int(stack_start + (stack_end - stack_start) / 2)
+    #SP = 0x20001000 #hardcoded for debug
     with open('%s/CODE'%(folder),mode='rt') as sppc_file:
        CODE = int(sppc_file.readline(),16)
     sppc_file.close()
