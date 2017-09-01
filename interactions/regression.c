@@ -1,6 +1,6 @@
 #include<assert.h>
 
-static int global;
+int global;
 int y4;
 
 typedef struct {
