@@ -198,18 +198,18 @@ void main(void){
   mixed_type mt_golden;
  
   mt.a = 0;
-  char c = 'a';
-  mt.b = &c;
+  char c1 = 'a';
+  mt.b = &c1;
   mt1 = add_type1(&mt);
 
   mt.a = 0;
-  c = 'a';
-  mt.b = &c;
+  char c2 = 'a';
+  mt.b = &c2;
   mt2 = add_type2(mt);
 
   mt.a = 0;
-  c = 'a';
-  mt.b = &c;
+  char c3 = 'a';
+  mt.b = &c3;
   mt_golden = add_type_golden(&mt);
 
   int array[6] = {1,5,2,7,4,2};
@@ -219,7 +219,7 @@ void main(void){
   sort_golden(array_golden,6);
 
   int l = 0x01234567;
-  c = trunc(l);
+  char c = trunc(l);
   char c_golden = (char)l;
 
   #ifndef NOPRINT
