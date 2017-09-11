@@ -98,80 +98,80 @@ else:
 # possible operations
 # TODO continue, somehow we must init the carry, consider CPSR etc...
 operations = OrderedDict()
-#operations.update({"Shift" : 
-#                     [
-#                       (("LSL",),
-#                        ("Rd","Rm","lsl"),
-#                        (),
-#                        ("Rd:=LSL(Rm,Rslsh)")
-#                       ),
-#                       (("LSLS",),
-#                        ("Rd","Rm","lsl"),
-#                        ("N","Z","C"),
-#                        ("Rd:=LSL(Rm,Rslsh)")
-#                       ),
-#                       (("LSL",),
-#                        ("Rd","Rm","Rslsl"),
-#                        ("N","Z","C"),
-#                        ("Rd:=LSL(Rm,Rslsh)")
-#                       ),
-#                       (("LSLS",),
-#                        ("Rd","Rm","Rslsl"),
-#                        ("N","Z","C"),
-#                        ("Rd:=LSL(Rm,Rslsh)")
-#                       ),
-#                       (("LSR","ASR"),
-#                        ("Rd","Rm","sr"),
-#                        (),
-#                        ("Rd:=LSL(Rm,Rslsh)")
-#                       ),
-#                       (("LSRS","ASRS"),
-#                        ("Rd","Rm","sr"),
-#                        ("N","Z","C"),
-#                        ("Rd:=LSL(Rm,Rslsh)")
-#                       ),
-#                       (("LSR","ASR"),
-#                        ("Rd","Rm","Rssr"),
-#                        (),
-#                        ("Rd:=LSL(Rm,Rslsh)")
-#                       ),
-#                       (("LSRS","ASRS"),
-#                        ("Rd","Rm","Rssr"),
-#                        ("N","Z","C"),
-#                        ("Rd:=LSL(Rm,Rslsh)")
-#                       ),
-#                       (("ROR",),
-#                        ("Rd","Rm","Rror"),
-#                        (),
-#                        ("Rd:=ROR(Rm,Rslsh)")
-#                       ),
-#                       (("RORS",),
-#                        ("Rd","Rm","Rror"),
-#                        ("N","Z","C"),
-#                        ("Rd:=ROR(Rm,Rslsh)")
-#                       ),
-#                       (("ROR",),
-#                        ("Rd","Rm","ror"),
-#                        (),
-#                        ("Rd:=ROR(Rm,Rslsh)")
-#                       ),
-#                       (("RORS",),
-#                        ("Rd","Rm","ror"),
-#                        ("N","Z","C"),
-#                        ("Rd:=ROR(Rm,Rslsh)")
-#                       ),
-#                       (("RRX",),
-#                        ("Rd","Rm"),
-#                        (),
-#                        ("Rd:=RRX(Rm)")
-#                       ),
-#                       (("RRXS",),
-#                        ("Rd","Rm"),
-#                        ("N","Z","C"),
-#                        ("Rd:=RRX(Rm)")
-#                       )
-#                    ]
-#                   })
+operations.update({"Shift" : 
+                     [
+                       (("LSL",),
+                        ("Rd","Rm","lsl"),
+                        (),
+                        ("Rd:=LSL(Rm,Rslsh)")
+                       ),
+                       (("LSLS",),
+                        ("Rd","Rm","lsl"),
+                        ("N","Z","C"),
+                        ("Rd:=LSL(Rm,Rslsh)")
+                       ),
+                       (("LSL",),
+                        ("Rd","Rm","Rslsl"),
+                        ("N","Z","C"),
+                        ("Rd:=LSL(Rm,Rslsh)")
+                       ),
+                       (("LSLS",),
+                        ("Rd","Rm","Rslsl"),
+                        ("N","Z","C"),
+                        ("Rd:=LSL(Rm,Rslsh)")
+                       ),
+                       (("LSR","ASR"),
+                        ("Rd","Rm","sr"),
+                        (),
+                        ("Rd:=LSL(Rm,Rslsh)")
+                       ),
+                       (("LSRS","ASRS"),
+                        ("Rd","Rm","sr"),
+                        ("N","Z","C"),
+                        ("Rd:=LSL(Rm,Rslsh)")
+                       ),
+                       (("LSR","ASR"),
+                        ("Rd","Rm","Rssr"),
+                        (),
+                        ("Rd:=LSL(Rm,Rslsh)")
+                       ),
+                       (("LSRS","ASRS"),
+                        ("Rd","Rm","Rssr"),
+                        ("N","Z","C"),
+                        ("Rd:=LSL(Rm,Rslsh)")
+                       ),
+                       (("ROR",),
+                        ("Rd","Rm","Rror"),
+                        (),
+                        ("Rd:=ROR(Rm,Rslsh)")
+                       ),
+                       (("RORS",),
+                        ("Rd","Rm","Rror"),
+                        ("N","Z","C"),
+                        ("Rd:=ROR(Rm,Rslsh)")
+                       ),
+                       (("ROR",),
+                        ("Rd","Rm","ror"),
+                        (),
+                        ("Rd:=ROR(Rm,Rslsh)")
+                       ),
+                       (("RORS",),
+                        ("Rd","Rm","ror"),
+                        ("N","Z","C"),
+                        ("Rd:=ROR(Rm,Rslsh)")
+                       ),
+                       (("RRX",),
+                        ("Rd","Rm"),
+                        (),
+                        ("Rd:=RRX(Rm)")
+                       ),
+                       (("RRXS",),
+                        ("Rd","Rm"),
+                        ("N","Z","C"),
+                        ("Rd:=RRX(Rm)")
+                       )
+                    ]
+                   })
 operations.update({"Add" : 
                      [
                        (("ADD",),
@@ -189,62 +189,62 @@ operations.update({"Add" :
                         ("N","Z","C","V"),
                         ("Rd:=Rn+Operand2+Carry")
                        ),
-                       (("ADD",),
+                       (("ADDW",),
                         ("Rd","Rn","#<imm12>"),
                         (),
                         ("Rd:=Rn+imm12")
                        )
                     ]
                    })
-#operations.update({"Compare" : 
-#                     [
-#                      (("CMP","CMN"),
-#                        ("Rncmp","<Operand2>"),
-#                        ("N","Z","C","V"),
-#                        ("update flags")
-#                       )
-#                     ]
-#                   })
-#
-#operations.update({"Subtract" : 
-#                     [
-#                       (("SUB",),
-#                        ("Rd","Rn","<Operand2>"),
-#                        (),
-#                        ("Rd:=Rn-Operand2")
-#                       ),
-#                       (("SBC","SBCS"),
-#                        ("Rd","Rn","<Operand2>"),
-#                        ("N","Z","C","V"),
-#                        ("Rd:=Rn-Operand2-NOT(Carry)")
-#                       ),
-#                        (("SUB",),
-#                        ("Rd","Rn","#<imm12>"),
-#                        (),
-#                        ("Rd:=Rn-imm12")
-#                       )
-#                     ]
-#                   })
-#operations.update({"MOV" : 
-#                     [
-#                      (("MOV","MVN"),
-#                        ("Rd","<Operand2>"),
-#                        (),
-#                        ("Rd:= (!)Operand2")
-#                      ),
-#                      (("MOVW",),
-#                        ("Rd","#<imm16>"),
-#                        (),
-#                        ("Rd:= zeroext(imm16)")
-#                      ),
-#                      (("MOVS","MVNS"),
-#                        ("Rd","<Operand2>"),
-#                        ("N","Z","C","V"),
-#                        ("Rd:= (!)Operand2")
-#                       )
-#                     ]
-#                   })
-#
+operations.update({"Compare" : 
+                     [
+                      (("CMP","CMN"),
+                        ("Rncmp","<Operand2>"),
+                        ("N","Z","C","V"),
+                        ("update flags")
+                       )
+                     ]
+                   })
+
+operations.update({"Subtract" : 
+                     [
+                       (("SUB",),
+                        ("Rd","Rn","<Operand2>"),
+                        (),
+                        ("Rd:=Rn-Operand2")
+                       ),
+                       (("SBC","SBCS"),
+                        ("Rd","Rn","<Operand2>"),
+                        ("N","Z","C","V"),
+                        ("Rd:=Rn-Operand2-NOT(Carry)")
+                       ),
+                        (("SUBW",),
+                        ("Rd","Rn","#<imm12>"),
+                        (),
+                        ("Rd:=Rn-imm12")
+                       )
+                     ]
+                   })
+operations.update({"MOV" : 
+                     [
+                      (("MOV","MVN"),
+                        ("Rd","<Operand2>"),
+                        (),
+                        ("Rd:= (!)Operand2")
+                      ),
+                      (("MOVW",),
+                        ("Rd","#<imm16>"),
+                        (),
+                        ("Rd:= zeroext(imm16)")
+                      ),
+                      (("MOVS","MVNS"),
+                        ("Rd","<Operand2>"),
+                        ("N","Z","C","V"),
+                        ("Rd:= (!)Operand2")
+                       )
+                     ]
+                   })
+
 operations.update({"Logical" : 
                      [
                        (("TST","TEQ",),
@@ -535,6 +535,12 @@ for i in range(0,tests_per_instruction):
               #    carry_in = random.randint(0,1)
               append_init_flags(init_strings,changed_regs)
               inst_string = instruction
+              #condition = random.choice(["","eq","ne","cs","hs",
+              #                             "cc","lo","mi","pl",
+              #                             "vs","vc","hi","ls",
+              #                             "ge","lt","gt","le"])
+              condition = "eq"
+              inst_string += condition
               return_string = ""
               for operand in operands:
                   #print(operand)
@@ -610,7 +616,10 @@ for i in range(0,tests_per_instruction):
                   elif operand == "#<imm16>":
                      imm16_val = random.randint(0,2**16-1)
                      inst_string += ", #0x%04x"%(imm16_val)
-
+              
+              # make sure to always enter it block
+              init_strings += ["cmp R0,R0"]
+              changed_regs += [0];
               # generate c code
               generate_test_code(init_strings,inst_string,return_string,id)
               #generate_test_code("",inst_string,"",id)
