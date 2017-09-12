@@ -21,7 +21,7 @@ import os_run
 import getopt
 import ldrstr
 import cf
-import constant
+import it
 
 # read command line args
 def print_usage_error():
@@ -98,104 +98,104 @@ else:
 # possible operations
 # TODO continue, somehow we must init the carry, consider CPSR etc...
 operations = OrderedDict()
-operations.update({"Shift" : 
-                     [
-                       (("LSL",),
-                        ("Rd","Rm","lsl"),
-                        (),
-                        ("Rd:=LSL(Rm,Rslsh)")
-                       ),
-                       (("LSLS",),
-                        ("Rd","Rm","lsl"),
-                        ("N","Z","C"),
-                        ("Rd:=LSL(Rm,Rslsh)")
-                       ),
-                       (("LSL",),
-                        ("Rd","Rm","Rslsl"),
-                        ("N","Z","C"),
-                        ("Rd:=LSL(Rm,Rslsh)")
-                       ),
-                       (("LSLS",),
-                        ("Rd","Rm","Rslsl"),
-                        ("N","Z","C"),
-                        ("Rd:=LSL(Rm,Rslsh)")
-                       ),
-                       (("LSR","ASR"),
-                        ("Rd","Rm","sr"),
-                        (),
-                        ("Rd:=LSL(Rm,Rslsh)")
-                       ),
-                       (("LSRS","ASRS"),
-                        ("Rd","Rm","sr"),
-                        ("N","Z","C"),
-                        ("Rd:=LSL(Rm,Rslsh)")
-                       ),
-                       (("LSR","ASR"),
-                        ("Rd","Rm","Rssr"),
-                        (),
-                        ("Rd:=LSL(Rm,Rslsh)")
-                       ),
-                       (("LSRS","ASRS"),
-                        ("Rd","Rm","Rssr"),
-                        ("N","Z","C"),
-                        ("Rd:=LSL(Rm,Rslsh)")
-                       ),
-                       (("ROR",),
-                        ("Rd","Rm","Rror"),
-                        (),
-                        ("Rd:=ROR(Rm,Rslsh)")
-                       ),
-                       (("RORS",),
-                        ("Rd","Rm","Rror"),
-                        ("N","Z","C"),
-                        ("Rd:=ROR(Rm,Rslsh)")
-                       ),
-                       (("ROR",),
-                        ("Rd","Rm","ror"),
-                        (),
-                        ("Rd:=ROR(Rm,Rslsh)")
-                       ),
-                       (("RORS",),
-                        ("Rd","Rm","ror"),
-                        ("N","Z","C"),
-                        ("Rd:=ROR(Rm,Rslsh)")
-                       ),
-                       (("RRX",),
-                        ("Rd","Rm"),
-                        (),
-                        ("Rd:=RRX(Rm)")
-                       ),
-                       (("RRXS",),
-                        ("Rd","Rm"),
-                        ("N","Z","C"),
-                        ("Rd:=RRX(Rm)")
-                       )
-                    ]
-                   })
-operations.update({"Add" : 
-                     [
-                       (("ADD",),
-                        ("Rd","Rn","<Operand2>"),
-                        (),
-                        ("Rd:=Rn+Operand2")
-                       ),
-                       (("ADDS",),
-                        ("Rd","Rn","<Operand2>"),
-                        ("N","Z","C","V"),
-                        ("Rd:=Rn+Operand2")
-                       ),
-                       (("ADC","ADCS"),
-                        ("Rd","Rn","<Operand2>"),
-                        ("N","Z","C","V"),
-                        ("Rd:=Rn+Operand2+Carry")
-                       ),
-                       (("ADDW",),
-                        ("Rd","Rn","#<imm12>"),
-                        (),
-                        ("Rd:=Rn+imm12")
-                       )
-                    ]
-                   })
+#operations.update({"Shift" : 
+#                     [
+#                       (("LSL",),
+#                        ("Rd","Rm","lsl"),
+#                        (),
+#                        ("Rd:=LSL(Rm,Rslsh)")
+#                       ),
+#                       (("LSLS",),
+#                        ("Rd","Rm","lsl"),
+#                        ("N","Z","C"),
+#                        ("Rd:=LSL(Rm,Rslsh)")
+#                       ),
+#                       (("LSL",),
+#                        ("Rd","Rm","Rslsl"),
+#                        ("N","Z","C"),
+#                        ("Rd:=LSL(Rm,Rslsh)")
+#                       ),
+#                       (("LSLS",),
+#                        ("Rd","Rm","Rslsl"),
+#                        ("N","Z","C"),
+#                        ("Rd:=LSL(Rm,Rslsh)")
+#                       ),
+#                       (("LSR","ASR"),
+#                        ("Rd","Rm","sr"),
+#                        (),
+#                        ("Rd:=LSL(Rm,Rslsh)")
+#                       ),
+#                       (("LSRS","ASRS"),
+#                        ("Rd","Rm","sr"),
+#                        ("N","Z","C"),
+#                        ("Rd:=LSL(Rm,Rslsh)")
+#                       ),
+#                       (("LSR","ASR"),
+#                        ("Rd","Rm","Rssr"),
+#                        (),
+#                        ("Rd:=LSL(Rm,Rslsh)")
+#                       ),
+#                       (("LSRS","ASRS"),
+#                        ("Rd","Rm","Rssr"),
+#                        ("N","Z","C"),
+#                        ("Rd:=LSL(Rm,Rslsh)")
+#                       ),
+#                       (("ROR",),
+#                        ("Rd","Rm","Rror"),
+#                        (),
+#                        ("Rd:=ROR(Rm,Rslsh)")
+#                       ),
+#                       (("RORS",),
+#                        ("Rd","Rm","Rror"),
+#                        ("N","Z","C"),
+#                        ("Rd:=ROR(Rm,Rslsh)")
+#                       ),
+#                       (("ROR",),
+#                        ("Rd","Rm","ror"),
+#                        (),
+#                        ("Rd:=ROR(Rm,Rslsh)")
+#                       ),
+#                       (("RORS",),
+#                        ("Rd","Rm","ror"),
+#                        ("N","Z","C"),
+#                        ("Rd:=ROR(Rm,Rslsh)")
+#                       ),
+#                       (("RRX",),
+#                        ("Rd","Rm"),
+#                        (),
+#                        ("Rd:=RRX(Rm)")
+#                       ),
+#                       (("RRXS",),
+#                        ("Rd","Rm"),
+#                        ("N","Z","C"),
+#                        ("Rd:=RRX(Rm)")
+#                       )
+#                    ]
+#                   })
+#operations.update({"Add" : 
+#                     [
+#                       (("ADD",),
+#                        ("Rd","Rn","<Operand2>"),
+#                        (),
+#                        ("Rd:=Rn+Operand2")
+#                       ),
+#                       (("ADDS",),
+#                        ("Rd","Rn","<Operand2>"),
+#                        ("N","Z","C","V"),
+#                        ("Rd:=Rn+Operand2")
+#                       ),
+#                       (("ADC","ADCS"),
+#                        ("Rd","Rn","<Operand2>"),
+#                        ("N","Z","C","V"),
+#                        ("Rd:=Rn+Operand2+Carry")
+#                       ),
+#                       (("ADDW",),
+#                        ("Rd","Rn","#<imm12>"),
+#                        (),
+#                        ("Rd:=Rn+imm12")
+#                       )
+#                    ]
+#                   })
 operations.update({"Compare" : 
                      [
                       (("CMP","CMN"),
@@ -206,73 +206,73 @@ operations.update({"Compare" :
                      ]
                    })
 
-operations.update({"Subtract" : 
-                     [
-                       (("SUB",),
-                        ("Rd","Rn","<Operand2>"),
-                        (),
-                        ("Rd:=Rn-Operand2")
-                       ),
-                       (("SBC","SBCS"),
-                        ("Rd","Rn","<Operand2>"),
-                        ("N","Z","C","V"),
-                        ("Rd:=Rn-Operand2-NOT(Carry)")
-                       ),
-                        (("SUBW",),
-                        ("Rd","Rn","#<imm12>"),
-                        (),
-                        ("Rd:=Rn-imm12")
-                       )
-                     ]
-                   })
-operations.update({"MOV" : 
-                     [
-                      (("MOV","MVN"),
-                        ("Rd","<Operand2>"),
-                        (),
-                        ("Rd:= (!)Operand2")
-                      ),
-                      (("MOVW",),
-                        ("Rd","#<imm16>"),
-                        (),
-                        ("Rd:= zeroext(imm16)")
-                      ),
-                      (("MOVS","MVNS"),
-                        ("Rd","<Operand2>"),
-                        ("N","Z","C","V"),
-                        ("Rd:= (!)Operand2")
-                       )
-                     ]
-                   })
-
-operations.update({"Logical" : 
-                     [
-                       (("TST","TEQ",),
-                        ("Rd","<Operand2>"),
-                        ("N","Z","C"),
-                        ("")
-                        ),
-                       (("ANDS",
-                         "EORS",
-                         "ORRS",
-                         "ORNS",
-                         "BICS"),
-                         ("Rd","Rn","<Operand2>"),
-                         ("N","Z","C"),
-                         ("")
-                        ),
-                        (("AND",
-                          "EOR",
-                          "ORR",
-                          "ORN",
-                          "BIC"),
-                         ("Rd","Rn","<Operand2>"),
-                         (),
-                         ("")
-                        )
-                    ]
-                   })
-
+#operations.update({"Subtract" : 
+#                     [
+#                       (("SUB",),
+#                        ("Rd","Rn","<Operand2>"),
+#                        (),
+#                        ("Rd:=Rn-Operand2")
+#                       ),
+#                       (("SBC","SBCS"),
+#                        ("Rd","Rn","<Operand2>"),
+#                        ("N","Z","C","V"),
+#                        ("Rd:=Rn-Operand2-NOT(Carry)")
+#                       ),
+#                        (("SUBW",),
+#                        ("Rd","Rn","#<imm12>"),
+#                        (),
+#                        ("Rd:=Rn-imm12")
+#                       )
+#                     ]
+#                   })
+#operations.update({"MOV" : 
+#                     [
+#                      (("MOV","MVN"),
+#                        ("Rd","<Operand2>"),
+#                        (),
+#                        ("Rd:= (!)Operand2")
+#                      ),
+#                      (("MOVW",),
+#                        ("Rd","#<imm16>"),
+#                        (),
+#                        ("Rd:= zeroext(imm16)")
+#                      ),
+#                      (("MOVS","MVNS"),
+#                        ("Rd","<Operand2>"),
+#                        ("N","Z","C","V"),
+#                        ("Rd:= (!)Operand2")
+#                       )
+#                     ]
+#                   })
+#
+#operations.update({"Logical" : 
+#                     [
+#                       (("TST","TEQ",),
+#                        ("Rd","<Operand2>"),
+#                        ("N","Z","C"),
+#                        ("")
+#                        ),
+#                       (("ANDS",
+#                         "EORS",
+#                         "ORRS",
+#                         "ORNS",
+#                         "BICS"),
+#                         ("Rd","Rn","<Operand2>"),
+#                         ("N","Z","C"),
+#                         ("")
+#                        ),
+#                        (("AND",
+#                          "EOR",
+#                          "ORR",
+#                          "ORN",
+#                          "BIC"),
+#                         ("Rd","Rn","<Operand2>"),
+#                         (),
+#                         ("")
+#                        )
+#                    ]
+#                   })
+#
 #
 # possible operand2
 # TODO continue, more values are possible, imm8 should be imm8m
@@ -519,124 +519,124 @@ def execute_on_device_and_dump(id,changed_regs):
 # test generation
 # TODO continue
 id = 0
-for i in range(0,tests_per_instruction):
-    for operation,suboperations in operations_expanded.items():
-      #print (operation)
-      for instructions,operands,updates,actions in suboperations:
-          #print (instructions)
-          for instruction in instructions:
-              changed_regs = []
-              if(updates != ()):
-                  changed_regs.append(list(device.regs.keys()).index('CPSR'))
-              init_strings = []
-              # implicit operand
-              #if actions.find("Carry") > 0:
-              #    # carry_in is a source operand
-              #    carry_in = random.randint(0,1)
-              append_init_flags(init_strings,changed_regs)
-              inst_string = instruction
-              #condition = random.choice(["","eq","ne","cs","hs",
-              #                             "cc","lo","mi","pl",
-              #                             "vs","vc","hi","ls",
-              #                             "ge","lt","gt","le"])
-              condition = "eq"
-              inst_string += condition
-              return_string = ""
-              for operand in operands:
-                  #print(operand)
-                  if operand == "Rd":
-                     Rd = random.randint(0,12)
-                     inst_string += " R%d"%(Rd)
-                     changed_regs.append(Rd)
-                     #return_string += "mov r0,r%d"%(Rd)
-                  elif operand in ["Rn","Rm"]:
-                     Rn = random.randint(0,12)
-                     Rn_val = random.randint(0,2**32-1)
-                     #Rn_val = random.randint(0,2**8-1)
-                     append_init_reg_strings(init_strings,Rn,Rn_val)
-                     inst_string += ", R%d"%(Rn)
-                     changed_regs.append(Rn)
-                  elif operand in ["Rncmp"]:
-                     Rn = random.randint(0,12)
-                     Rn_val = random.randint(0,2**32-1)
-                     #Rn_val = random.randint(0,2**8-1)
-                     append_init_reg_strings(init_strings,Rn,Rn_val)
-                     inst_string += " R%d"%(Rn)
-                     changed_regs.append(Rn)
-                  elif operand in ["Rn, shift"]:
-                     Rn = random.randint(0,12)
-                     Rn_val = random.randint(0,2**32-1)
-                     #Rn_val = random.randint(0,2**8-1)
-                     append_init_reg_strings(init_strings,Rn,Rn_val)
-                     inst_string += ", R%d"%(Rn)
-                     inst_string += random.choice([", lsl #%d"%(random.randint(0,31)),
-                                                   ", lsr #%d"%(random.randint(1,32)),
-                                                   ", asr #%d"%(random.randint(1,32)),
-                                                   ", ror #%d"%(random.randint(1,31)),
-                                                   ", rrx"]);
-                     changed_regs.append(Rn)
-                  elif operand in ["Rror"]:
-                     Rn = random.randint(0,12)
-                     Rn_val = random.randint(1,31)
-                     append_init_reg_strings(init_strings,Rn,Rn_val)
-                     inst_string += ", R%d"%(Rn)
-                     changed_regs.append(Rn)
-                  elif operand in ["Rssr"]:
-                     Rn = random.randint(0,12)
-                     Rn_val = random.randint(1,32)
-                     append_init_reg_strings(init_strings,Rn,Rn_val)
-                     inst_string += ", R%d"%(Rn)
-                     changed_regs.append(Rn)
-                  elif operand in ["Rslsl"]:
-                     Rn = random.randint(0,12)
-                     Rn_val = random.randint(0,31)
-                     append_init_reg_strings(init_strings,Rn,Rn_val)
-                     inst_string += ", R%d"%(Rn)
-                     changed_regs.append(Rn)
-                  elif operand == "ror":
-                     sr = random.randint(1,31)
-                     inst_string += ", %d"%(sr)
-                  elif operand == "sr":
-                     sr = random.randint(1,32)
-                     inst_string += ", %d"%(sr)
-                  elif operand == "lsl":
-                     lsl = random.randint(0,31)
-                     inst_string += ", %d"%(lsl)
-                  elif operand == "#<imm8>":
-                     imm8_val = random.randint(0,2**8-1)
-                     inst_string += ", #0x%02x"%(imm8_val)
-                  elif operand == "#<const>":
-                     const = constant.generate(seed
-                                               +random.randint(0,10)
-                                               +tests_per_instruction)                    
-                     inst_string += ", #0x%08x"%(const)
-                  elif operand == "#<imm12>":
-                     imm12_val = random.randint(0,2**12-1)
-                     inst_string += ", #0x%03x"%(imm12_val)
-                  elif operand == "#<imm16>":
-                     imm16_val = random.randint(0,2**16-1)
-                     inst_string += ", #0x%04x"%(imm16_val)
-              
-              # make sure to always enter it block
-              init_strings += ["cmp R0,R0"]
-              changed_regs += [0];
-              # generate c code
-              generate_test_code(init_strings,inst_string,return_string,id)
-              #generate_test_code("",inst_string,"",id)
-              
-              # compile the code for the real device
-              os_run.run_catch_error('make FOLDER=%s ID=%d'%(folder,id),cont)
-    
-              # execute on the real hw
-              if(no_device==False):
-                  execute_on_device_and_dump(id,changed_regs)
-    
-              if(no_device == False):
-                  os_run.run_catch_error('cat %s/reg_diff%d.log'%(folder,id),cont)
-              
-              id += 1
-              #input("Press any key to continue")
-
+#for i in range(0,tests_per_instruction):
+#    for operation,suboperations in operations_expanded.items():
+#      #print (operation)
+#      for instructions,operands,updates,actions in suboperations:
+#          #print (instructions)
+#          for instruction in instructions:
+#              changed_regs = []
+#              if(updates != ()):
+#                  changed_regs.append(list(device.regs.keys()).index('CPSR'))
+#              init_strings = []
+#              # implicit operand
+#              #if actions.find("Carry") > 0:
+#              #    # carry_in is a source operand
+#              #    carry_in = random.randint(0,1)
+#              append_init_flags(init_strings,changed_regs)
+#              inst_string = instruction
+#              #condition = random.choice(["","eq","ne","cs","hs",
+#              #                             "cc","lo","mi","pl",
+#              #                             "vs","vc","hi","ls",
+#              #                             "ge","lt","gt","le"])
+#              #condition = "al"#"eq"
+#              #inst_string += condition
+#              return_string = ""
+#              for operand in operands:
+#                  #print(operand)
+#                  if operand == "Rd":
+#                     Rd = random.randint(0,12)
+#                     inst_string += " R%d"%(Rd)
+#                     changed_regs.append(Rd)
+#                     #return_string += "mov r0,r%d"%(Rd)
+#                  elif operand in ["Rn","Rm"]:
+#                     Rn = random.randint(0,12)
+#                     Rn_val = random.randint(0,2**32-1)
+#                     #Rn_val = random.randint(0,2**8-1)
+#                     append_init_reg_strings(init_strings,Rn,Rn_val)
+#                     inst_string += ", R%d"%(Rn)
+#                     changed_regs.append(Rn)
+#                  elif operand in ["Rncmp"]:
+#                     Rn = random.randint(0,12)
+#                     Rn_val = random.randint(0,2**32-1)
+#                     #Rn_val = random.randint(0,2**8-1)
+#                     append_init_reg_strings(init_strings,Rn,Rn_val)
+#                     inst_string += " R%d"%(Rn)
+#                     changed_regs.append(Rn)
+#                  elif operand in ["Rn, shift"]:
+#                     Rn = random.randint(0,12)
+#                     Rn_val = random.randint(0,2**32-1)
+#                     #Rn_val = random.randint(0,2**8-1)
+#                     append_init_reg_strings(init_strings,Rn,Rn_val)
+#                     inst_string += ", R%d"%(Rn)
+#                     inst_string += random.choice([", lsl #%d"%(random.randint(0,31)),
+#                                                   ", lsr #%d"%(random.randint(1,32)),
+#                                                   ", asr #%d"%(random.randint(1,32)),
+#                                                   ", ror #%d"%(random.randint(1,31)),
+#                                                   ", rrx"]);
+#                     changed_regs.append(Rn)
+#                  elif operand in ["Rror"]:
+#                     Rn = random.randint(0,12)
+#                     Rn_val = random.randint(1,31)
+#                     append_init_reg_strings(init_strings,Rn,Rn_val)
+#                     inst_string += ", R%d"%(Rn)
+#                     changed_regs.append(Rn)
+#                  elif operand in ["Rssr"]:
+#                     Rn = random.randint(0,12)
+#                     Rn_val = random.randint(1,32)
+#                     append_init_reg_strings(init_strings,Rn,Rn_val)
+#                     inst_string += ", R%d"%(Rn)
+#                     changed_regs.append(Rn)
+#                  elif operand in ["Rslsl"]:
+#                     Rn = random.randint(0,12)
+#                     Rn_val = random.randint(0,31)
+#                     append_init_reg_strings(init_strings,Rn,Rn_val)
+#                     inst_string += ", R%d"%(Rn)
+#                     changed_regs.append(Rn)
+#                  elif operand == "ror":
+#                     sr = random.randint(1,31)
+#                     inst_string += ", %d"%(sr)
+#                  elif operand == "sr":
+#                     sr = random.randint(1,32)
+#                     inst_string += ", %d"%(sr)
+#                  elif operand == "lsl":
+#                     lsl = random.randint(0,31)
+#                     inst_string += ", %d"%(lsl)
+#                  elif operand == "#<imm8>":
+#                     imm8_val = random.randint(0,2**8-1)
+#                     inst_string += ", #0x%02x"%(imm8_val)
+#                  elif operand == "#<const>":
+#                     const = constant.generate(seed
+#                                               +random.randint(0,10)
+#                                               +tests_per_instruction)                    
+#                     inst_string += ", #0x%08x"%(const)
+#                  elif operand == "#<imm12>":
+#                     imm12_val = random.randint(0,2**12-1)
+#                     inst_string += ", #0x%03x"%(imm12_val)
+#                  elif operand == "#<imm16>":
+#                     imm16_val = random.randint(0,2**16-1)
+#                     inst_string += ", #0x%04x"%(imm16_val)
+#              
+#              # make sure to always enter it block
+#              #init_strings += ["cmp R0,R0"]
+#              #changed_regs += [0];
+#              # generate c code
+#              generate_test_code(init_strings,inst_string,return_string,id)
+#              #generate_test_code("",inst_string,"",id)
+#              
+#              # compile the code for the real device
+#              os_run.run_catch_error('make FOLDER=%s ID=%d'%(folder,id),cont)
+#    
+#              # execute on the real hw
+#              if(no_device==False):
+#                  execute_on_device_and_dump(id,changed_regs)
+#    
+#              if(no_device == False):
+#                  os_run.run_catch_error('cat %s/reg_diff%d.log'%(folder,id),cont)
+#              
+#              id += 1
+#              #input("Press any key to continue")
+#
 #for i in range(0,tests_per_instruction):
 #    init_regs,base_reg,offset_reg,ldrstr_instructions = ldrstr.generate_ldrstr(seed+i)
 #    changed_regs = init_regs+[base_reg]+[offset_reg]
@@ -701,6 +701,22 @@ for i in range(0,tests_per_instruction):
 #        id += 1
 #        if id==1:
 #           break
+for i in range(0,tests_per_instruction):
+   init_regs,tests = it.generate_it_tests(seed+i)
+   init_strings = []
+   for init_reg in init_regs:
+       Rn_val = random.randint(0,2**32-1)
+       Rn = list(device.regs.keys()).index(init_reg);
+       append_init_reg_strings(init_strings,Rn,Rn_val)
+   append_init_flags(init_strings,init_regs)
+   for test in tests:
+       generate_test_code(init_strings+test,"","",id)
+       os_run.run_catch_error('make FOLDER=%s ID=%d'%(folder,id),cont)
+       execute_on_device_and_dump(id,init_regs)
+       device.halt()
+       device.display_all_regs()
+       device.resume()
+       id += 1
 
 with open('%s/Ntests'%(folder),mode='wt') as Ntests_file:
     Ntests_file.write("%d\n"%(id))
