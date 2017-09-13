@@ -705,9 +705,8 @@ for i in range(0,tests_per_instruction):
    init_regs,tests = it.generate_it_tests(seed+i)
    init_strings = []
    for init_reg in init_regs:
-       Rn_val = random.randint(0,2**32-1)
-       Rn = list(device.regs.keys()).index(init_reg);
-       append_init_reg_strings(init_strings,Rn,Rn_val)
+       init_reg_val = random.randint(0,2**32-1)
+       append_init_reg_strings(init_strings,init_reg,init_reg_val)
    append_init_flags(init_strings,init_regs)
    for test in tests:
        generate_test_code(init_strings+test,"","",id)

@@ -33,7 +33,7 @@ conditions = [["eq","ne"],
               ["gt","le"],
               ["le","gt"]]
 
-init_regs = ["R0","R1","R2","R3","R4","R5","R6","R7","R8","R9","R10"]
+init = ["R0","R1","R2","R3","R4","R5","R6","R7","R8","R9","R10"]
 
 instructions = [["movs","r2,#2"],
                 ["mov","r3,#3"],
@@ -86,7 +86,10 @@ def generate_it_tests(seed):
         it_block.append("continue:  mov r10,r10");
 
         tests.append(it_block)
-
+    
+    init_regs = []
+    for reg in init:
+      init_regs.append(list(device.regs.keys()).index(reg))
     return init_regs,tests
 
 if __name__ == "__main__":
