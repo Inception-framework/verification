@@ -48,7 +48,7 @@ last = [["b","target"]]
 
 target = ["mov r10,#10"]
 
-its = list(itertools.product(["it"],
+its = list(itertools.product(["itblock: it"],
                             ["","t","e"],
                             ["","t","e"],
                             ["","t","e"]))
@@ -59,6 +59,9 @@ def generate_it_tests(seed):
     for it in its:
         it_block = []
         it_block.append("cmp r0,r1")
+        # randomly put it as first instruction of a block
+        if(random.choice([0,1]) == 1):
+            it_block.append("b itblock")
         cond,cond_n = random.choice(conditions)
         
         it_inst = ''.join(it)
