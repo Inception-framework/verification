@@ -163,6 +163,30 @@ char trunc(int i){
   return (char)i;
 }
 
+
+// gcd in C or asm with it blocks
+// from http://www.keil.com/support/man/docs/armasm/armasm_dom1359731162809.htm
+int gcd_golden(int a, int b){
+    while (a != b)
+      {
+        if (a > b)
+            a = a - b;
+        else
+            b = b - a;
+      }
+    return a;
+}
+
+__attribute__((naked))
+int gcd(int a, int b){
+   __asm volatile("loop: CMP     r0, r1");
+   __asm volatile("      ITE     GT"); 
+   __asm volatile("      SUBGT   r0, r0, r1");
+   __asm volatile("      SUBLE   r1, r1, r0");
+   __asm volatile("      BNE     loop");
+   __asm volatile("      bx lr");
+}
+
 void main(void){
   int x,y1,y2,y3,y5,y_golden;
   x = 6;
@@ -222,6 +246,11 @@ void main(void){
   char c = trunc(l);
   char c_golden = (char)l;
 
+  int A = 2048;
+  int B = 1536;
+  int GCD = gcd(A,B);
+  int GCD_golden = gcd_golden(A,B);
+
   #ifndef NOPRINT
   printf("fibonacci1(%d) = %d\n",x,y1);
   printf("fibonacci2(%d) = %d\n",x,y2);
@@ -274,6 +303,11 @@ void main(void){
 
   printf("trunc(0x%08x) = 0x%02x\n",l,c);
   assert(c == c_golden);
+  printf("ok\n\n");
+
+  printf("gcd(%d,%d) = %d\n",A,B,GCD);
+  printf("gcd_golden(%d,%d) = %d\n",A,B,GCD_golden);
+  assert(GCD == GCD_golden);
   printf("ok\n\n");
 
 
