@@ -206,25 +206,31 @@ operations = OrderedDict()
 #                     ]
 #                   })
 #
-#operations.update({"Subtract" : 
-#                     [
-#                       (("SUB",),
-#                        ("Rd","Rn","<Operand2>"),
-#                        (),
-#                        ("Rd:=Rn-Operand2")
-#                       ),
-#                       (("SBC","SBCS"),
-#                        ("Rd","Rn","<Operand2>"),
-#                        ("N","Z","C","V"),
-#                        ("Rd:=Rn-Operand2-NOT(Carry)")
-#                       ),
-#                        (("SUBW",),
-#                        ("Rd","Rn","#<imm12>"),
-#                        (),
-#                        ("Rd:=Rn-imm12")
-#                       )
-#                     ]
-#                   })
+operations.update({"Subtract" : 
+                     [
+                      # (("SUB",),
+                      #  ("Rd","Rn","<Operand2>"),
+                      #  (),
+                      #  ("Rd:=Rn-Operand2")
+                      # ),
+                      # (("SBC","SBCS"),
+                      #  ("Rd","Rn","<Operand2>"),
+                      #  ("N","Z","C","V"),
+                      #  ("Rd:=Rn-Operand2-NOT(Carry)")
+                      # ),
+                      #  (("SUBW",),
+                      #  ("Rd","Rn","#<imm12>"),
+                      #  (),
+                      #  ("Rd:=Rn-imm12")
+                      # ),
+                       (("RSBS",),
+                        ("Rd","Rn","#0"),
+                        (),
+                        ("Rd:=Rn-imm12")
+                       )
+
+                     ]
+                   })
 #operations.update({"MOV" : 
 #                     [
 #                      (("MOV","MVN"),
@@ -273,21 +279,21 @@ operations = OrderedDict()
 #                    ]
 #                   })
 #
-operations.update({"Multiply" : 
-                     [
-                      (("MUL",),
-                        ("Rd","Rm"),
-                        (),
-                        ()
-                      ),
-                      (("UMLAL",),
-                        ("Rd_lo, Rd_hi","Rn","Rn"),
-                        (),
-                        ()
-                       )
-                     ]
-                   })
-
+#operations.update({"Multiply" : 
+#                     [
+#                      (("MUL",),
+#                        ("Rd","Rm"),
+#                        (),
+#                        ()
+#                      ),
+#                      (("UMLAL",),
+#                        ("Rd_lo, Rd_hi","Rn","Rn"),
+#                        (),
+#                        ()
+#                       )
+#                     ]
+#                   })
+#
 
 #
 # possible operand2
@@ -647,7 +653,9 @@ for i in range(0,tests_per_instruction):
                   elif operand == "#<imm16>":
                      imm16_val = random.randint(0,2**16-1)
                      inst_string += ", #0x%04x"%(imm16_val)
-              
+                  elif operand == "#0":
+                     inst_string += ", #0"
+
               # make sure to always enter it block
               #init_strings += ["cmp R0,R0"]
               #changed_regs += [0];
