@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <stdio.h>
-#define N 2
-#define SIZE 3
+#define N 11
+#define SIZE 2047
 
 typedef struct _step{
   int src;
