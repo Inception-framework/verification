@@ -206,31 +206,41 @@ operations = OrderedDict()
 #                     ]
 #                   })
 #
-operations.update({"Subtract" : 
+#operations.update({"Subtract" : 
+#                     [
+#                       (("SUB",),
+#                        ("Rd","Rn","<Operand2>"),
+#                        (),
+#                        ("Rd:=Rn-Operand2")
+#                       ),
+#                       (("SBC","SBCS"),
+#                        ("Rd","Rn","<Operand2>"),
+#                        ("N","Z","C","V"),
+#                        ("Rd:=Rn-Operand2-NOT(Carry)")
+#                       ),
+#                        (("SUBW",),
+#                        ("Rd","Rn","#<imm12>"),
+#                        (),
+#                        ("Rd:=Rn-imm12")
+#                       ),
+#                       (("RSBS",),
+#                        ("Rd","Rn","#0"),
+#                        (),
+#                        ("Rd:=Rn-imm12")
+#                       )
+#
+#                     ]
+#                   })
+operations.update({"Misc" : 
                      [
-                      # (("SUB",),
-                      #  ("Rd","Rn","<Operand2>"),
-                      #  (),
-                      #  ("Rd:=Rn-Operand2")
-                      # ),
-                      # (("SBC","SBCS"),
-                      #  ("Rd","Rn","<Operand2>"),
-                      #  ("N","Z","C","V"),
-                      #  ("Rd:=Rn-Operand2-NOT(Carry)")
-                      # ),
-                      #  (("SUBW",),
-                      #  ("Rd","Rn","#<imm12>"),
-                      #  (),
-                      #  ("Rd:=Rn-imm12")
-                      # ),
-                       (("RSBS",),
-                        ("Rd","Rn","#0"),
+                      (("RBIT",),
+                        ("Rd","Rn"),
                         (),
-                        ("Rd:=Rn-imm12")
-                       )
-
+                        ("")
+                      )
                      ]
                    })
+
 #operations.update({"MOV" : 
 #                     [
 #                      (("MOV","MVN"),
