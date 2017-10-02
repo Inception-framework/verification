@@ -231,26 +231,26 @@ operations = OrderedDict()
 #
 #                     ]
 #                   })
-operations.update({"Misc" : 
-                     [
-                      (("RBIT",),
-                        ("Rd","Rn"),
-                        (),
-                        ("")
-                      ),
-                      (("REV",),
-                        ("Rd","Rn"),
-                        (),
-                        ("")
-                      ),
-                      (("CLZ",),
-                        ("Rd","Rn"),
-                        (),
-                        ("")
-                      )
-                     ]
-                   })
-
+#operations.update({"Misc" : 
+#                     [
+#                      (("RBIT",),
+#                        ("Rd","Rn"),
+#                        (),
+#                        ("")
+#                      ),
+#                      (("REV",),
+#                        ("Rd","Rn"),
+#                        (),
+#                        ("")
+#                      ),
+#                      (("CLZ",),
+#                        ("Rd","Rn"),
+#                        (),
+#                        ("")
+#                      )
+#                     ]
+#                   })
+#
 #operations.update({"MOV" : 
 #                     [
 #                      (("MOV","MVN"),
@@ -314,6 +314,16 @@ operations.update({"Misc" :
 #                     ]
 #                   })
 #
+operations.update({"Divide" : 
+                     [
+                      (("UDIV",),
+                        ("Rd","Rpos","Rpos"),
+                        (),
+                        ()
+                      )
+                    ]
+                   })
+
 
 #
 # possible operand2
@@ -609,6 +619,13 @@ for i in range(0,tests_per_instruction):
                   elif operand in ["Rn","Rm"]:
                      Rn = random.randint(0,12)
                      Rn_val = random.randint(0,2**32-1)
+                     #Rn_val = random.randint(0,2**8-1)
+                     append_init_reg_strings(init_strings,Rn,Rn_val)
+                     inst_string += ", R%d"%(Rn)
+                     changed_regs.append(Rn)
+                  elif operand in ["Rpos"]:
+                     Rn = random.randint(0,12)
+                     Rn_val = random.randint(1,2**32-1)
                      #Rn_val = random.randint(0,2**8-1)
                      append_init_reg_strings(init_strings,Rn,Rn_val)
                      inst_string += ", R%d"%(Rn)
