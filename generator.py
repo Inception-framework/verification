@@ -237,6 +237,11 @@ operations.update({"Misc" :
                         ("Rd","Rn"),
                         (),
                         ("")
+                      ),
+                      (("CLZ",),
+                        ("Rd","Rn"),
+                        (),
+                        ("")
                       )
                      ]
                    })
