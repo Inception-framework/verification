@@ -114,7 +114,7 @@ fi
 printf "%s\n" "--> ok"
 
 if [ $PRINT_GRAPHS = true ]; then
-	PRINT_ARGS='-view-machine-dags -view-ir-dags -print-graph'
+	PRINT_ARGS='-view-machine-dags'
 else
        PRINT_ARGS=''
 fi
