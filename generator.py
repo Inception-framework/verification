@@ -22,6 +22,7 @@ import getopt
 import ldrstr
 import cf
 import it
+import constant
 
 # read command line args
 def print_usage_error():
@@ -206,8 +207,8 @@ operations = OrderedDict()
 #                     ]
 #                   })
 #
-#operations.update({"Subtract" : 
-#                     [
+operations.update({"Subtract" : 
+                     [
 #                       (("SUB",),
 #                        ("Rd","Rn","<Operand2>"),
 #                        (),
@@ -223,14 +224,14 @@ operations = OrderedDict()
 #                        (),
 #                        ("Rd:=Rn-imm12")
 #                       ),
-#                       (("RSBS",),
-#                        ("Rd","Rn","#0"),
-#                        (),
-#                        ("Rd:=Rn-imm12")
-#                       )
+                       (("RSB","RSBS"),
+                        ("Rd","Rn","#<const>"),
+                        (),
+                        ("Rd:=Rn-imm12")
+                       )
 #
-#                     ]
-#                   })
+                     ]
+                   })
 #operations.update({"Misc" : 
 #                     [
 #                      (("RBIT",),
@@ -314,17 +315,17 @@ operations = OrderedDict()
 #                     ]
 #                   })
 #
-operations.update({"Divide" : 
-                     [
-                      (("UDIV",),
-                        ("Rd","Rpos","Rpos"),
-                        (),
-                        ()
-                      )
-                    ]
-                   })
-
-
+#operations.update({"Divide" : 
+#                     [
+#                      (("UDIV",),
+#                        ("Rd","Rpos","Rpos"),
+#                        (),
+#                        ()
+#                      )
+#                    ]
+#                   })
+#
+#
 #
 # possible operand2
 # TODO continue, more values are possible, imm8 should be imm8m
