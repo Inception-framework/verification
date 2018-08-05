@@ -15,7 +15,8 @@ run_klee() {
   rm stack.dump >&-
 
   # Load the configuration file
-  cp $DIR/../Samples/lpc1800-demos/config.json .
+  #cp $DIR/../Samples/lpc1800-demos/config.json .
+  cp $DIR/config.json .
   sed -i -r "s/prova.elf/main${arg1}.elf/g" config.json
 
   # Remove old log
