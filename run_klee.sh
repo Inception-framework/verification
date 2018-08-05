@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ "$#" != 2 ]; then
   echo "Missing arguments ..."
@@ -11,8 +11,8 @@ run_klee() {
   arg1=$1
 
   # Remove old dump file
-  rm registers.dump >&-
-  rm stack.dump >&-
+  #rm registers.dump >&-
+  #rm stack.dump >&-
 
   # Load the configuration file
   #cp $DIR/../Samples/lpc1800-demos/config.json .

@@ -13,7 +13,7 @@
 import sys
 import time
 import os
-sys.path.append('../RTDebugger-driver/src/')
+sys.path.append('../rt-debugger-driver/binding/')
 import interactive
 from collections import OrderedDict
 import random
@@ -90,7 +90,7 @@ os_run.run_catch_error("./versioning.sh %s"%(vfile),False)
 
 # the real device, used as golden model
 if(no_device==False):
-    device = interactive.Interactive('../RTDebugger-driver/Debug/libinception.so',False)
+    device = interactive.Interactive('../rt-debugger-driver/Debug/libinception.so',False)
 else:
     print("\nSkipping execution on device...\n")
 

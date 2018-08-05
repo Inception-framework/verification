@@ -19,11 +19,9 @@ function clean() {
 	rm -rf $3/*.bin
 }
 
-LLVM_LINK='../tools/llvm/build_debug/Debug+Asserts/bin/llvm-link'
-LLVM_AS='../tools/llvm/build_debug/Debug+Asserts/bin/llvm-as'
-CLANG='../tools/llvm/build_debug/Debug+Asserts/bin/clang'
-TARGET_PATH='../Compiler/Debug+Asserts/bin'
-TARGET=''
+LLVM_LINK=llvm-link
+LLVM_AS=llvm-as
+CLANG=clang
 
 AS_ARGS='-mcpu=cortex-m3 -mthumb -mfloat-abi=softfp'
 CLANG_ARGS='--target=thumbv7m-elf -mcpu=cortex-m3 -mthumb'
@@ -119,7 +117,7 @@ else
        PRINT_ARGS=''
 fi
 
-$TARGET_PATH/$TARGET -disable-interrupt $PRINT_ARGS $FRACTURE_ARGS #2>&1 >/dev/null
+$TARGET -disable-interrupt $PRINT_ARGS $FRACTURE_ARGS #2>&1 >/dev/null
 if [ $? != 0 ]; then
 	printf "%s\n" "--> $1 fracture failed"
 	exit 1;

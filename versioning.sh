@@ -7,14 +7,34 @@ fi
 
 vfile=$1
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cd ..
+ANALYZER=../analyzer
+TRANSLATOR=../translator
+RTDEBUGGERDRIVER=../rt-debugger-driver
+VERIFICATION="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 echo "Save current version info in $vfile" | tee $vfile
-echo "Inception" | tee -a $vfile
+echo "Inception-framework" | tee -a $vfile
+echo "" | tee -a $vfile
+echo "analyzer" | tee -a $vfile
+cd $ANALYZER
 git branch | tee -a $vfile
 git log -1 --format="%H" | tee -a $vfile
-git submodule status | tee -a $vfile
-cd Samples
-git submodule status | tee -a $vfile
-cd $DIR
+
+echo "" | tee -a $vfile
+echo "translator" | tee -a $vfile
+cd $TRANSLATOR
+git branch | tee -a $vfile
+git log -1 --format="%H" | tee -a $vfile
+
+echo "" | tee -a $vfile
+echo "rt-debugger-driver" | tee -a $vfile
+cd $RTDEBUGGERDRIVER
+git branch | tee -a $vfile
+git log -1 --format="%H" | tee -a $vfile
+
+echo "" | tee -a $vfile
+echo "verification" | tee -a $vfile
+cd $VERIFICATION
+git branch | tee -a $vfile
+git log -1 --format="%H" | tee -a $vfile
 
