@@ -17,7 +17,7 @@ for any comment, issue, or question.
     * [Running a regression](#Regression)
     * [Running a single test](#Test)
     * [Generating new tests](#Generation)
-* [Known issues](#Known issues)
+* [Issues](#Issues)
 
 ## <a name="Files"></a>Files
 
@@ -115,7 +115,7 @@ An example could be:
 
 ```python3.5 generator.py -s 0 -c False -o ci/tests/example -N 10```
 
-## <a name="Known issues"></a>Known issues
+## <a name="Issues"></a>Issues
 
 This repository is the result of several experimets and evolved over time. We have privileged
 stability and compatibilty with past collections of the results (time consuming process), rather
